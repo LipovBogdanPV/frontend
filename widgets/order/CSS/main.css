@@ -1,0 +1,216 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 0px;
+  background-color: #f5f5f5;
+}
+
+h1 {
+  color: #333;
+}
+
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.category-button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.category-button:hover {
+  background-color: #0056b3;
+}
+
+
+/*========== <!-- header.html --> ======*/
+.widget-header {
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 15px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.widget-header .logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #00bfff;
+}
+
+.nav-links a {
+  margin-left: 20px;
+  color: #ccc;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.nav-links a:hover {
+  color: #fff;
+}
+
+
+/*=============вирівнювання даних в таблиці замовлення =========================*/
+ .center-column {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  /*====================================================================*/
+  /* 🌐 Загальні стилі для всіх заголовків і клітинок Таблиці Замовлення*/
+
+#orderTable th,
+#orderTable td {
+  padding: 6px 8px;            /* Відступи всередині клітинок */
+  font-size: 14px;             /* Розмір шрифту */
+  text-align: center;          /* Вирівнювання по центру за замовчуванням */
+  vertical-align: middle;      /* Вирівнювання по вертикалі */
+}
+
+/* 📏 Індивідуальні ширини та специфічне вирівнювання */
+#orderTable td:nth-child(1),
+#orderTable th:nth-child(1) {
+  width: 10px;                 /* Ширина для № */
+}
+
+#orderTable td:nth-child(2),
+#orderTable th:nth-child(2) {                /* Ширина для "Товар" */
+  text-align: left;            /* Вирівнювання по лівому краю лише для цієї колонки */
+  width: 70%;   
+}
+
+#orderTable td:nth-child(3),
+#orderTable th:nth-child(3) {
+  width: 10%;
+  min-width: 7%;
+  max-width: 20%;                 /* Розмір */
+}
+
+#orderTable td:nth-child(4),
+#orderTable th:nth-child(4) {
+  width: 7%;                 /* Додатково */
+}
+
+
+
+#orderTable td:nth-child(5),
+#orderTable th:nth-child(5) {
+  width: 7%;                 /* Ціна */
+}
+
+
+
+#orderTable td:nth-child(6),
+#orderTable th:nth-child(6) {
+  width: 7%;                 /* Видалити */
+
+
+}
+/* ==============🔹 Колір фону всієї таблиці ======================*/
+#orderTable {
+  background-color: #ffffff;        /* Світлий фон всієї таблиці */
+  border: 1px solid #ece6e6;           /* Світла рамка */
+  border-collapse: collapse;        /* Прибирає подвійні лінії */
+}
+
+/* 🔹 Колір фону заголовка таблиці (перший рядок <th>) */
+#orderTable thead {
+  background-color: #f0f0f0;        /* Сіренький фон */
+}
+
+/* 🔹 Колір тексту заголовків */
+#orderTable th {
+  color: #000000;                      /* Темно-сірий текст */
+  font-weight: bold;
+  text-transform: uppercase;        /* Всі літери великі (за бажанням) */
+}
+
+/* =============🔷 Основний стиль для блоків ============================= */
+.category-block {
+  display: block;                              /* Робимо блок повноширинним */
+  padding: 12px 20px;
+  margin: 8px;
+  background: linear-gradient(145deg, #f3f4f6, #ffffff);
+  border: 1px solid #ccc;
+  border-radius: 14px;
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+  
+}
+
+/* 🔹 Ефект при наведенні */
+.category-block:hover {
+  background-color: #e8f0ff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transform: scale(1.005);
+}
+
+/* 🔸 При натисканні (опціонально) */
+.category-block:active {
+  transform: scale(0.98);
+  background-color: #d6e3ff;
+}
+
+.active-category-button {
+  background-color: #2b90d9;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.delivery-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.delivery-input {
+  display: none;
+  width: 120px;
+}
+
+/* Уніфікований рядок картки (заголовок + кнопка) */
+.card-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;                 /* відступ між заголовком і кнопкою */
+}
+
+/* Заголовок тягнеться, щоб кнопка лишилась компактною */
+.card-row .card-title {
+  flex: 1 1 auto;
+}
+
+/* Кнопка в аксесуарах і в 'Додатково' — компактна */
+#accessoryContainer .category-button,
+/* Тільки в блоці ДОДАТКОВО – не розтягувати кнопку */
+#extraContainer .category-button{
+  width: auto !important;
+  display: inline-block !important;
+  flex: 0 0 auto !important;
+  align-self: center;
+  min-width: 90px;      /* щоб не стискалась занадто */
+  white-space: nowrap;  /* один рядок */
+  text-align: center;
+  padding-left: 16px;   /* як у решти кнопок */
+  padding-right: 16px;
+}

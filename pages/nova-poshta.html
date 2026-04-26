@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Нова Пошта — ShiftTime CRM</title>
+  <!-- Стилі віджета -->
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+  <!-- Контейнер форми -->
+  <div id="form-container" class="flex-1 p-4 overflow-y-auto max-h-[92vh]">
+    <form id="form" novalidate class="bg-white p-4 sm:p-6 rounded shadow-md space-y-4 max-w-xl mx-auto">
+
+      <div id="form-customer-block"></div>
+      <div id="form-address-block"></div>
+
+      <!-- Приховані поля -->
+      <input type="hidden" id="hidden-region" name="region" />
+      <input type="hidden" id="hidden-city" name="city" />
+      <input type="hidden" id="hidden-district" name="district" />
+      <input type="hidden" id="hidden-warehouse" name="warehouse" />
+      <input type="hidden" id="hidden-street" name="street" />
+      <input type="hidden" id="hidden-warehouse-number" name="warehouseNumber" />
+      <input type="hidden" id="hidden-warehouse-type" name="warehouseType" />
+
+      <div id="response" class="text-center text-sm mt-2"></div>
+
+      <div class="text-center">
+        <button type="submit" id="submitAll" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow">
+          📤 Оформити
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 🚀 Ініціалізація компонентів та логіки -->
+ 
+
+  
+
+
+</body>
+</html>

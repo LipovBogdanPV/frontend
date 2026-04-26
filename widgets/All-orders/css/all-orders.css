@@ -1,0 +1,480 @@
+/* ========================== */
+/*  All Orders Widget (CSS)   */
+/*  Файл: widgets/All-orders/css/all-orders.css */
+/*  Все стилі скоуплені в #ordersWidget */
+/* ========================== */
+
+/* ---- Тема/змінні кольорів та базові параметри ---- */
+#ordersWidget { /* кореневий контейнер віджета */
+  --ow-bg: #1539d9;               /* фон усього віджета */
+  --ow-surface: #433a3a;          /* фон блоків/карток */
+  --ow-surface-2: #4a4d57;        /* другорядна поверхня (деталі) */
+  --ow-border: #636c9e;           /* колір бордера */
+  --ow-text: #fdfdfd;             /* основний текст */
+  --ow-text-dim: #da8d89;         /* приглушений текст */
+  --ow-muted: #686893;            /* ще приглушеніший текст/іконки */
+  --ow-accent: #1f872f;           /* зелений акцент (статуси, прогрес) */
+  --ow-accent-2: #277e8c;         /* бірюзовий акцент (ховер/фокус) */
+  --ow-danger: #ef4444;           /* помилки/виділення */
+  --ow-warning: #f59e0b;          /* попередження */
+  --ow-radius: 8px;              /* радіус скруглення блоків */
+  --ow-pad: 12px;                 /* базовий відступ усередині елементів */
+  --ow-gap: 8px;                  /* базовий проміжок між елементами */
+  --ow-font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; /* шрифт */
+}
+
+/* ---- База для типографіки й фону всередині віджета ---- */
+#ordersWidget * {                  /* все всередині віджета */
+  box-sizing: border-box;          /* акуратні розміри (враховує бордери/падінги) */
+  font-family: var(--ow-font);     /* єдиний шрифт */
+}
+#ordersWidget {                    
+  color: var(--ow-text);           /* базовий колір тексту */
+}
+
+/* ========================== */
+/*        Шапка віджета       */
+/* ========================== */
+
+/* перший дочірній елемент у #ordersWidget — це твоя шапка (контролери, фільтри) */
+#ordersWidget > :first-child {                      
+  background: var(--ow-surface);   /* фон шапки */
+  border: 1px solid var(--ow-border); /* бордер шапки */
+  border-radius: var(--ow-radius); /* скруглення шапки */
+  padding: calc(var(--ow-pad) + 4px); /* внутрішній відступ шапки */
+}
+
+/* заголовок віджета у шапці */
+#ordersWidget > :first-child h2 {                  
+  margin: 0;                        /* прибираємо дефолтний margin */
+  letter-spacing: 0.2px;            /* легкий трекінг */
+}
+
+/* інпут пошуку */
+#ordersWidget #searchBox {                          
+  height: 36px;                     /* висота поля */
+  background: #0d0f13;              /* фон інпуту */
+  color: var(--ow-text);            /* текст у полі */
+  border: 1px solid var(--ow-border); /* бордер інпуту */
+  border-radius: 10px;              /* скруглення інпуту */
+  padding: 0 12px;                  /* горизонтальні відступи */
+  outline: none;                    /* прибрати синю рамку браузера */
+}
+#ordersWidget #searchBox::placeholder {            
+  color: var(--ow-muted);           /* колір плейсхолдера */
+}
+#ordersWidget #searchBox:focus {                   
+  border-color: var(--ow-accent-2); /* колір бордера у фокусі */
+  box-shadow: 0 0 0 3px rgba(34,211,238,0.15); /* підсвіт фокусу */
+}
+
+/* селект статусів */
+#ordersWidget #statusFilter {                       
+  height: 36px;                     /* висота селекта */
+  background: #0d0f13;              /* фон селекта */
+  color: var(--ow-text);            /* текст у селекті */
+  border: 1px solid var(--ow-border); /* бордер селекта */
+  border-radius: 10px;              /* скруглення селекта */
+  padding: 0 10px;                  /* внутрішні відступи */
+  outline: none;                    /* без стандартного фокусу */
+}
+#ordersWidget #statusFilter:focus {                
+  border-color: var(--ow-accent-2); /* бордер у фокусі */
+  box-shadow: 0 0 0 3px rgba(34,211,238,0.15); /* підсвіт фокусу */
+}
+
+/* ========================== */
+/*        Таблиця-список      */
+/* ========================== */
+
+/* контейнер таблиці — другий блок у віджеті */
+#ordersWidget > :nth-child(2) {                     
+  background: linear-gradient(180deg, rgba(17,18,22,0.9), rgba(17,18,22,0.7)); /* легкий градієнт фону */
+  border: 1px solid var(--ow-border); /* бордер контейнера */
+  border-radius: var(--ow-radius);     /* скруглення контейнера */
+  overflow: hidden;                    /* ховаємо виступаючі краї */
+}
+
+/* шапка таблиці (рядок заголовків) */
+#ordersWidget #ordersHead {                         
+  position: sticky;                   /* прилипає зверху контейнера */
+  top: 0;                             /* від нуля */
+  z-index: 2;                         /* поверх рядків */
+  background: rgba(41, 45, 61, 0.95);    /* фон шапки */
+  backdrop-filter: blur(6px);         /* легкий блюр при скролі */
+  color: var(--ow-text-dim);          /* приглушений колір */
+  font-size: 11px;                    /* дрібний кегль */
+  letter-spacing: 0.08em;             /* апер-кейс трекінг */
+  text-transform: uppercase;          /* верхній регістр */
+  padding: 10px 16px;                 /* внутрішні відступи */
+  border-bottom: 1px solid var(--ow-border); /* роздільник */
+  gap: 12px; /* ✅ такий самий проміжок між колонками, як у data-row */
+
+}
+
+/* кожен «блок-рядок» (обгортка, яка містить кнопку-рядок і деталі) */
+#ordersWidget #ordersBody > div {                   
+  border-top: 1px solid rgba(255,255,255,0.04); /* тонка лінія між рядками */
+}
+
+/* сама кнопка-рядок (з атрибутом data-row) */
+#ordersWidget [data-row] {                          
+  width: 100%;                       /* на всю ширину */
+  display: grid;                     /* сітка (колонки задає inline-стиль з JS) */
+  align-items: start;                /* вирівнювання по верхньому краю */
+  gap: 12px;                         /* проміжок між колонками */
+  font-size: 14px;                   /* базовий кегль рядка */
+  line-height: 1.25;                 /* висота рядка */
+  color: var(--ow-text);             /* колір тексту */
+  background: transparent;           /* без фону у спокої */
+  padding: 12px 16px;                /* внутрішні відступи рядка */
+  cursor: pointer;                   /* курсор «рука» */
+  transition: background 120ms ease, transform 120ms ease; /* плавність */
+}
+#ordersWidget [data-row]:hover {                    
+  background: rgba(255,255,255,0.03); /* фон при наведенні */
+}
+#ordersWidget [data-row]:focus-visible {           
+  outline: 0;                         /* без стандартного оутлайна */
+  box-shadow: 0 0 0 3px rgba(34,211,238,0.15) inset; /* внутрішній підсвіт фокусу */
+}
+
+/* клітинки в рядку (кожен <div> усередині data-row) */
+#ordersWidget [data-row] > div {                    
+  min-height: 20px;                  /* мінімальна висота клітинки */
+  word-break: break-word;            /* перенос довгих рядків */
+}
+
+/* моноширинний текст (ТТН) — те, що ти віддаєш з class="font-mono" */
+#ordersWidget .font-mono {                            
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* шрифт для кодів */
+  font-size: 13px;                   /* трохи дрібніший шрифт */
+}
+
+/* зебра-рядки для кращої читабельності (не перебиває hover) */
+#ordersWidget #ordersBody > div:nth-child(even) [data-row] { 
+  background: rgba(255,255,255,0.015); /* легка підсвітка парних */
+}
+#ordersWidget #ordersBody > div:nth-child(even) [data-row]:hover {
+  background: rgba(255,255,255,0.03);  /* трохи яскравіше на hover */
+}
+
+/* ========================== */
+/*          Деталі            */
+/* ========================== */
+
+/* контейнер детального блоку (data-details) */
+#ordersWidget [data-details] {                       
+  background: var(--ow-surface-2);   /* фон блоку деталей */
+  border-left: 1px solid var(--ow-border); /* бордер зліва (візуальна «вкладеність») */
+  border-right: 1px solid var(--ow-border);/* бордер справа */
+  border-bottom: 1px solid var(--ow-border);/* бордер знизу */
+  padding: 0 16px 14px 16px;         /* внутрішні відступи */
+}
+
+/* «картка» всередині details (ти її вже рендериш як rounded-2xl …) */
+#ordersWidget [data-details] > div {                 
+  background: var(--ow-surface);     /* фон картки */
+  border: 1px solid var(--ow-border);/* бордер картки */
+  border-radius: var(--ow-radius);   /* скруглення */
+  padding: 16px;                      /* внутрішні відступи */
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25); /* легка тінь */
+}
+
+/* заголовки секцій у деталях (Отримувач / Адреса / Фінанси) */
+#ordersWidget [data-details] .tracking-wide {        
+  color: var(--ow-text-dim);          /* колір заголовків секцій */
+}
+
+/* значення в секціях (звичайний текст) */
+#ordersWidget [data-details] .text-sm {              
+  color: var(--ow-text);              /* колір тексту */
+}
+
+/* підписи (менші сірі, напр. дод. інформація) */
+#ordersWidget [data-details] .text-xs, 
+#ordersWidget .text-xs.text-zinc-400 {               
+  color: var(--ow-muted);             /* приглушений колір */
+}
+
+/* прогрес-бар (доріжка) */
+#ordersWidget [data-details] .h-2.rounded-full.bg-zinc-800 { 
+  background: #0e1014;                /* колір треку */
+}
+
+/* прогрес-бар (заповнення) */
+#ordersWidget [data-details] .h-2.rounded-full.bg-emerald-500 { 
+  background: var(--ow-accent);       /* колір заповнення (зелений) */
+}
+
+/* ========================== */
+/*       Значки/бейджі        */
+/* ========================== */
+
+/* універсальний бейдж статусу (твій HTML вже містить стилі — це м’яка «надбудова») */
+#ordersWidget .ow-badge {                             
+  display: inline-flex;             /* горизонтальний бейдж */
+  align-items: center;              /* центруємо по вертикалі */
+  gap: 6px;                         /* відстань піктограма ↔ текст */
+  border: 1px solid var(--ow-border); /* бордер бейджа */
+  background: rgba(30, 201, 144, 0.1); /* прозорий зелений фон */
+  color: #a7f3d0;                   /* зелений текст */
+  padding: 2px 8px;                 /* внутрішні відступи */
+  border-radius: 999px;             /* «піллюля» */
+  font-size: 12px;                  /* розмір тексту */
+  line-height: 1;                   /* щільний рядок */
+}
+
+/* маленька «крапка» в бейджі статусу */
+#ordersWidget .ow-dot {                              
+  width: 6px;                        /* діаметр */
+  height: 6px;                       /* діаметр */
+  border-radius: 50%;                /* коло */
+  background: var(--ow-accent);      /* колір точки */
+}
+
+/* якщо потрібно «сірий» бейдж — додатковий модифікатор */
+#ordersWidget .ow-badge.is-muted {                    
+  background: rgba(255,255,255,0.05); /* сіруватий фон */
+  color: var(--ow-text);              /* білий текст */
+}
+
+/* ========================== */
+/*       Дрібні покращення    */
+/* ========================== */
+
+/* трішки більші відступи між блоками у віджеті */
+#ordersWidget .space-y-4 > * + * {                    
+  margin-top: 14px;                 /* вертикальний інтервал між секціями */
+}
+
+/* вирівнювання числових колонок праворуч (коли додаєш клас через JS) */
+#ordersWidget .is-numeric {                            
+  text-align: right;                /* вирівнювання праворуч */
+}
+
+/* адаптивна дрібниця: на дуже вузьких екранах трохи зменшимо шрифти */
+@media (max-width: 520px) {                           
+  #ordersWidget [data-row] { font-size: 13px; }      /* рядки таблиці трохи дрібніші */
+  #ordersWidget #ordersHead { font-size: 10px; }     /* заголовок таблиці дрібніший */
+}
+
+/* (Опціонально) Компактний режим, якщо коли-небудь додаси клас .ow-compact на #ordersWidget */
+#ordersWidget.ow-compact #ordersHead {               
+  padding: 8px 12px;                 /* менші відступи у шапці таблиці */
+}
+#ordersWidget.ow-compact [data-row] {                
+  padding: 8px 12px;                 /* менші відступи рядка */
+  gap: 8px;                          /* менший проміжок між клітинками */
+}
+#ordersWidget.ow-compact [data-details] > div {      
+  padding: 12px;                      /* компактніші деталі */
+}
+
+/* ===== FIX: у кнопки-рядка за замовчуванням text-align:center.
+   Примусово вирівнюємо вліво і для кнопки, і для її клітинок. ===== */
+#ordersWidget [data-row] {
+  text-align: left !important;            /* знімає центрування кнопки */
+}
+#ordersWidget [data-row] > div {
+  text-align: left !important;            /* клітинки теж ліворуч */
+}
+
+/* Універсальні модифікатори вирівнювання для тих колонок, що треба: */
+#ordersWidget #ordersHead > div.is-center,
+#ordersWidget [data-row] > div.is-center { text-align: center !important; }
+
+#ordersWidget #ordersHead > div.is-right,
+#ordersWidget [data-row] > div.is-right  { text-align: right  !important; }
+
+/* ===== Блок таблиці товарів у деталях замовлення ===== */
+/* ===========================================================
+   ТОВАРНА ТАБЛИЦЯ — ГНУЧКА, ЗАВЖДИ ВМІЩАЄТЬСЯ В ШИРИНУ КАРТКИ
+   -----------------------------------------------------------
+   ЩО МІНЯТИ:
+   --ow-font        : розмір шрифту рядків (px)
+   --ow-font-head   : розмір шрифту заголовків (px)
+   --ow-gap         : проміжок між колонками (px)
+   --f1..--f7       : ПРОПОРЦІЇ колонок (fr). Більше число → ширша колонка.
+                      col1=Товар, col2=Розмір, col3=Опис, col4=Коментар,
+                      col5=Покупка, col6=Маржа, col7=Ціна
+   НЕ ПЕРЕЗАДУМУЙСЯ: Нічого «віднімати» не треба — сітка сама ділить простір.
+   =========================================================== */
+
+#ordersWidget{
+  /* шрифти */
+  --ow-font: 12px;
+  --ow-font-head: 13px;
+
+  /* відстань між колонками */
+  --ow-gap: 12px;
+
+  /* ваги колонок (пропорції) — можна міняти під себе */
+  --f1: 4fr;    /* Товар    */
+  --f2: .8fr;   /* Розмір   */
+  --f3: 3fr;    /* Опис     */
+  --f4: 1.1fr;  /* Коментар */
+  --f5: .5fr;   /* Покупка  */
+  --f6: .5fr;   /* Маржа    */
+  --f7: .5fr;   /* Ціна     */
+}
+
+/* контейнер таблиці: завжди в межах картки */
+#ordersWidget .ow-items{
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;     /* не даємо вилізати назовні */
+  box-sizing: border-box;
+}
+
+/* рядок (і заголовок, і дані) */
+#ordersWidget .ow-items .ow-row{
+  display: grid;
+
+  /* КОЖНА колонка: може стискатись до 0, а розширюється
+     пропорційно своїй вазі (var(--fX)). Так таблиця
+     завжди займає рівно ширину контейнера. */
+  grid-template-columns:
+    minmax(0, var(--f1))
+    minmax(0, var(--f2))
+    minmax(0, var(--f3))
+    minmax(0, var(--f4))
+    minmax(0, var(--f5))
+    minmax(0, var(--f6))
+    minmax(0, var(--f7));
+
+  column-gap: var(--ow-gap);
+  align-items: center;
+  padding: 8px 10px;
+  font-size: var(--ow-font);
+  box-sizing: border-box;
+}
+
+/* заголовок */
+#ordersWidget .ow-items .ow-head{
+  font-size: var(--ow-font-head);
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  color: var(--ow-text-dim, #a1a1aa);
+  border-bottom: 1px solid var(--ow-border, #27272a);
+}
+
+/* «зебра» для рядків */
+#ordersWidget .ow-items .ow-row:not(.ow-head):nth-child(odd){
+  background: rgba(255,255,255,0.02);
+}
+
+/* клітинки: дозволяємо стискання + красиво обрізаємо довгі тексти */
+#ordersWidget .ow-items .ow-cell{
+  min-width: 0;               /* КЛЮЧ: дозволяє гріду стискати колонку */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;        /* поставь 'normal', якщо хочеш перенос рядків */
+}
+
+/* числові колонки праворуч + моношрифт */
+#ordersWidget .ow-items .ow-cell.ow-num{
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+               "Liberation Mono","Courier New", monospace;
+}
+
+
+#ordersWidget .ow-items .ow-row .ow-cell:nth-child(1),
+#ordersWidget .ow-items .ow-row .ow-cell:nth-child(3),
+#ordersWidget .ow-items .ow-row .ow-cell:nth-child(4){
+  white-space: normal;     /* перенос рядків */
+}
+
+/* віджет займає всю ширину */
+#ordersWidget, #ordersBox { width: 100%; max-width: none; }
+
+/* Віджет заповнює доступну висоту */
+#ordersWidget { height: 100%; min-height: 0; }
+
+/* Тіло таблиці скролиться; шапка прилипає всередині контейнера */
+#ordersBody { overflow: auto; }
+#ordersHead { position: sticky; top: 0; z-index: 10; }
+
+
+/* щоб флекс-дитина могла “влізти” у доступну висоту */
+#ordersWidget,
+#ordersBox,
+#ordersScroll {
+  min-height: 0;
+}
+
+
+/* 1) Глобальний контейнер контенту - НЕ скролимо сторінку */
+.content-scroll{
+  overflow-y: hidden !important;  /* було auto → стало hidden */
+}
+
+/* 2) Нехай #main-content займає всю висоту області і дозволяє дітям тягнутись */
+#main-content{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* 3) Віджет замовлень тягнеться на всю висоту */
+#ordersWidget{
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* 4) Коробка з таблицею теж тягнеться */
+#ordersBox{
+ /* flex: 1;   */
+  min-height: 0;
+}
+
+/* 5) Саме тут скролиться контент, хедер sticky всередині */
+#ordersScroll{
+  height: 100%;
+  overflow: auto;
+}
+
+/* липка шапка поверх рядків під час прокрутки */
+#ordersHead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(24,24,27,.8);
+  backdrop-filter: blur(2px);
+}
+
+/* ===== All-Orders: фікс перекриття дропдаунів шапкою таблиці ===== */
+:root{
+  --ao-head-z: 120;     /* шар липкої шапки таблиці */
+  --ao-dd-z:   5000;    /* шар випадаючих меню/поповерів */
+}
+
+/* липка шапка таблиці — залишається липкою, але нижче, ніж дропдауни */
+#all-orders .ao-sticky-head,
+#all-orders thead,
+#all-orders thead tr,
+#all-orders thead th {
+  z-index: var(--ao-head-z) !important;
+}
+
+/* дропдауни фільтрів (Bootstrap/кастомні) — завжди над шапкою */
+#all-orders .dropdown-menu,
+#all-orders .ao-filter-menu,
+#all-orders [data-role="filter-menu"],
+#all-orders [role="menu"] {
+  position: absolute;                    /* лишаємось в потоці сторінки */
+  z-index: var(--ao-dd-z) !important;    /* вище за липку шапку */
+}
+
+/* контейнер зі скролом для таблиці — не ріжемо випадаючі меню */
+#all-orders .table-wrap,
+#all-orders .orders-scroll,
+#all-orders .orders-grid,
+#all-orders .ao-scroll {
+  overflow: visible !important;
+}

@@ -1,0 +1,71 @@
+redirectsOrigin = "config"
+plugins = []
+functionsDirectory = "D:\\AUTOMATIC\\ВІДЖЕТ\\Головна CRM\\ShiftTime_CRM_TEST\\frontend\\netlify\\functions"
+functionsDirectoryOrigin = "config"
+headers = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "D:\\AUTOMATIC\\ВІДЖЕТ\\Головна CRM\\ShiftTime_CRM_TEST\\frontend"
+publishOrigin = "default"
+base = "D:\\AUTOMATIC\\ВІДЖЕТ\\Головна CRM\\ShiftTime_CRM_TEST\\frontend"
+functions = "D:\\AUTOMATIC\\ВІДЖЕТ\\Головна CRM\\ShiftTime_CRM_TEST\\frontend\\netlify\\functions"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[redirects]]
+from = "/api/telegram/send"
+to = "/.netlify/functions/send-telegram"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/api/orders/set-status"
+to = "/.netlify/functions/set-status"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/api/orders/set-ttn"
+to = "/.netlify/functions/set-ttn"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+  from = "/api/auth"
+  to   = "/.netlify/functions/auth"
+  status = 200
+  force = true

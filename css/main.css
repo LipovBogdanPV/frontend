@@ -1,0 +1,212 @@
+/* =======================================================================
+   SHIFTIME CRM — GLOBAL STYLES (консолідована версія)
+   - базові ресети
+   - сайдбар/шапки
+   - віджети (Orders / Nova Poshta)
+   - вьюпорт + таби (горизонт/вертикаль/обидва)
+   - sticky header fix для головної шапки (де кнопка "Вихід")
+   ======================================================================= */
+
+/* -------------------------- RESET ------------------------------------ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body{
+  font-family: sans-serif;
+  background-color: #f3f4f6;
+}
+
+/* ----------------------- CSS Variables -------------------------------- */
+:root{
+  --app-header-h: 64px;  /* реальна висота головної шапки (можеш підправити) */
+  --hdr-h: 60px;          /* дефолтна висота шапки віджета (#widget-header-origin) */
+  --footer-h: 40px;       /* якщо футер fixed знизу */
+  --ao-badge-radius: 10px;
+}
+
+/* ----------------------- Helpers ------------------------------------- */
+.feedback{ font-size:.9em; margin-left:4px; display:block; font-weight:bold; }
+.feedback.error{ color:red; }
+.feedback.warning{ color:blue; }
+.feedback.ok{ color:black; }
+.hidden{ display:none !important; }
+.active{ font-weight:bold; }
+.menu-icon{ width:16px; height:16px; margin-right:6px; vertical-align:middle; }
+.is-loading{ cursor:wait; }
+
+/* ----------------------- Sidebar ------------------------------------- */
+.sidebar{ background:#000; color:#fff; padding-bottom:120px; }
+.sidebar a, .sidebar .nav-link{ color:#fff !important; }
+.sidebar svg, .sidebar img{ filter:brightness(0) invert(1); }
+
+/* ----------------------- Widget Header (modern) ----------------------- */
+#widget-header{
+  padding:0 !important;
+  background:#fdfdfd !important;
+  color:#111827 !important;
+  box-shadow:0 0 0 rgba(0,0,0,0) !important;
+  border-radius:5px !important;
+  width:100% !important;
+  margin:0 !important;
+  border-bottom:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  min-height:50px !important;
+  position:sticky; top:0; z-index:50;
+}
+body.dark-mode #widget-header{
+  background:#1f2937; color:#f9fafb; box-shadow:0 2px 8px rgba(0,0,0,.5);
+  border-bottom:1px solid #374151;
+}
+
+/* ----------------------- Widget Header (origin/legacy) ---------------- */
+#widget-header-origin{
+  padding:10px 20px !important;
+  background:#fff !important;
+  color:#111827 !important;
+  border-radius:5px !important;
+  width:100% !important;
+  margin:0 !important;
+  min-height:60px !important;
+  position:sticky; top:0; z-index:1002;  /* завжди над контентом віджета */
+  background:#fff;                        /* непрозорий фон при скролі */
+}
+
+/* ----------------------- Page Layout ---------------------------------- */
+main{
+  height:100vh;
+  overflow:hidden;            /* скрол робимо у внутрішніх контейнерах */
+  display:flex; flex-direction:row;
+}
+.right-col{
+  display:flex; flex-direction:column;
+  min-height:0; flex:1 1 auto;
+}
+
+/* внутрішній універсальний скролер (де потрібно) */
+.content-scroll{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  padding-bottom:var(--footer-h);
+}
+
+/* ----------------------- Footer (fixed) -------------------------------- */
+#footer{
+  position:fixed; left:0; right:0; bottom:0; height:40px;
+  background:#1a1a1a; color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  z-index:50;
+}
+/* резерв, щоб контент не впирався у футер */
+#sidebar, #main-content{ padding-bottom:0; }
+
+/* ----------------------- Config KV textarea --------------------------- */
+#config-kv-page textarea.kv-textarea{
+  overflow:hidden; resize:none; line-height:1.35rem;
+  font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
+               Consolas, "Liberation Mono", monospace;
+  word-break: break-word; white-space: pre-wrap;
+}
+#config-kv-page .env-active{
+  outline: 2px solid rgba(99,102,241,.45);
+  outline-offset:2px; border-radius:10px;
+}
+
+/* ----------------------- Orders small tweaks -------------------------- */
+.ao-badge{ display:inline-block; padding:2px 8px; line-height:1.2; font-weight:600;
+  border-radius:var(--ao-badge-radius); }
+#ordersWidget > * + * { margin-top:1px !important; }
+#ordersHead{ padding-top:10px !important; padding-bottom:8px !important; }
+
+/* ----------------------- NP Page scroller ------------------------------ */
+#npScroll{
+  min-height:0;
+  height:calc(100vh - 140px);
+  overflow-y:auto; overflow-x:hidden;
+  position:relative;
+  padding-bottom:50px;
+}
+@media (max-height:680px){
+  #npScroll{ height:calc(100vh - 100px); }
+}
+
+/* ----------------------- Tabs / Widgets viewport ----------------------- */
+
+/* Контейнер, який скролиться під шапкою віджета */
+#widgets-viewport{
+  position:relative;
+  height:calc(100vh - var(--footer-h));         /* висота без футера */
+  overflow-y:auto !important;
+  overflow-x:hidden;
+  min-height:0;
+  padding-bottom:var(--footer-h);               /* запас під футер */
+}
+/* Якщо над viewport у тій самій колонці є шапка віджета — даємо відступ */
+#widgets-viewport.with-hdr{
+  height:calc(100vh - var(--footer-h) - var(--hdr-h));
+  padding-top:var(--hdr-h);
+}
+
+/* Базово — звичайний потік, нічого не ріжемо */
+#tabs-wrapper{ display:block !important; overflow:visible !important; gap:16px; }
+#tabs-wrapper .tab-pane{ min-height:0; width:100%; }
+#tovar, #nova-poshta{ scroll-margin-top:80px; overflow:visible !important; }
+
+/* Вертикальний режим: панелі одна під одною */
+#tabs-wrapper.layout-vertical{ display:block !important; }
+#tabs-wrapper.layout-vertical > .tab-pane{
+  display:block !important; width:100%; margin:0 0 16px 0;
+}
+
+/* Горизонтальний: 1 колонка на мобі, 2 — на десктопі */
+#tabs-wrapper.layout-horizontal{ display:grid !important; grid-template-columns:1fr; gap:16px; align-items:start; }
+@media (min-width:1024px){
+  #tabs-wrapper.layout-horizontal{ grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+}
+
+/* Режим “обидва”: завжди показуємо обидві панелі */
+#tabs-wrapper.both-mode > .tab-pane{ display:block !important; visibility:visible !important; }
+
+/* ----------------------- Header placeholder (якщо треба) --------------- */
+#header-placeholder{ position:sticky; top:0; z-index:100; }
+
+/* ----------------------- Global overflow safety ------------------------ */
+/* Не чіпаємо #main-content тут, щоб він міг бути скрол-контейнером */
+html, body, #tabs-wrapper, #tovar, #nova-poshta{ overflow:visible !important; }
+
+/* =======================================================================
+   STICKY FIX: головна шапка (де “Вихід”) ЗАВЖДИ ПОВЕРХ УСЬОГО
+   ======================================================================= */
+:where(header, .app-header, .site-header, .topbar, .top-bar, #main-header, #header){
+  position: sticky;     /* або fixed — якщо так у верстці */
+  top: 0;
+  z-index: 2147483000 !important;  /* максимально високо */
+  isolation: isolate;  /* власний stacking context */
+}
+
+/* Основний контент скролиться під головною шапкою */
+:where(#main-content, main){
+  position: relative;
+  height: calc(100vh - var(--app-header-h));
+  overflow: auto;
+  min-height: 0;
+}
+
+/* Будь-які внутрішні “локальні шапки” у контенті нижче за головну */
+#main-content :is(.widget-toolbar, .np-toolbar, .orders-toolbar, .sticky, [style*="position: sticky"]){
+  z-index: 100 !important;
+  top: 0;
+}
+
+/* Страховка: не створюємо нові stacking-context-и на головних обгортках */
+:where(#app, .app, .root){
+  transform:none !important;
+  filter:none !important;
+  opacity:1 !important;
+}
+
+#user-menu{ position:relative; z-index:10050; }
+header, .app-header, #main-header { position:relative; z-index:10000; }

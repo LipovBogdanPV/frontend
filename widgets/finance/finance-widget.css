@@ -1,0 +1,281 @@
+/* frontend/widgets/finance/finance-widget.css */
+/* ===================== ТЕМА / ЗМІННІ ===================== */
+.fw-root {
+  --fw-bg:        #0f172a;   /* тло */
+  --fw-text:      #cb1010;   /* текст */
+  --fw-muted:     #94a3b8;   /* другорядний текст */
+  --fw-card:      #111827;   /* картки/панелі */
+  --fw-border:    #243043;
+
+  --fw-primary:   #231bc6;   /* кнопки/акценти */
+  --fw-secondary: #e93a0e;
+  --fw-success:   #10b981;
+  --fw-danger:    #ef4444;
+
+  --fw-radius:    16px;      /* радіус кутів */
+  --fw-pad:       16px;      /* внутрішні відступи карток */
+  --fw-shadow:    0 10px 30px rgba(0,0,0,.35); /* тінь */
+  --fw-opacity:   .96;       /* прозорість карток */
+  --fw-maxw:      1280px;    /* макс. ширина виджета */
+
+  --fw-cats-h:    520px;     /* висота списку категорій */
+
+  color: var(--fw-text);
+  background: transparent;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+}
+
+/* Якщо треба іншу тему через data-theme можна перевизначити змінні тут */
+.fw-root[data-theme="default"] {}
+
+/* ===================== БАЗА ===================== */
+.fw-root * { box-sizing: border-box; }
+.fw-root .fw-muted { color: var(--fw-muted); }
+.fw-root .fw-h2 { font-size: 1.1rem; font-weight: 700; margin: 0 0 8px; }
+.fw-root .fw-h3 { font-size: 1.05rem; font-weight: 700; margin: 0; }
+.fw-root .fw-h4 { font-size: .95rem; font-weight: 700; margin: 0 0 8px; }
+
+.fw-root .fw-card {
+  background: color-mix(in srgb, var(--fw-card), transparent calc(100% - (var(--fw-opacity) * 100%)));
+  backdrop-filter: saturate(140%) blur(6px);
+  border: 1px solid var(--fw-border);
+  border-radius: var(--fw-radius);
+  box-shadow: var(--fw-shadow);
+}
+
+/* ===================== ШАПКА ===================== */
+.fw-header{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px; padding:18px; margin:0 auto 16px; max-width:var(--fw-maxw);
+  background: linear-gradient(180deg, rgba(35, 128, 221, 0.02), rgba(50, 8, 8, 0));
+  border-bottom: 1px solid var(--fw-border);
+  border-radius: calc(var(--fw-radius) + 4px);
+}
+.fw-brand{display:flex; align-items:center; gap:14px;}
+.fw-logo{
+  width:44px; height:44px; border-radius:12px;
+  background: linear-gradient(135deg,var(--fw-primary),var(--fw-secondary));
+  box-shadow: 0 8px 22px rgba(41, 17, 180, 0.35);
+}
+.fw-title{font-size:1.15rem; line-height:1.1; margin:0;}
+.fw-subtitle{margin:2px 0 0; color:var(--fw-muted); font-size:.85rem;}
+
+.fw-actions{display:flex; gap:10px;}
+
+/* ===================== КНОПКИ ===================== */
+.fw-btn{
+  --_bg: var(--fw-primary); --_txt:#fff; --_bd: transparent;
+  appearance:none; border:1px solid var(--_bd); background:var(--_bg); color:var(--_txt);
+  padding:10px 14px; border-radius:12px; font-weight:700; letter-spacing:.2px;
+  cursor:pointer; transition: transform .08s ease, filter .2s ease, background .2s ease, border-color .2s ease;
+}
+.fw-btn:hover{ filter:brightness(1.06); transform: translateY(-1px); }
+.fw-btn:active{ transform: translateY(0); }
+
+.fw-btn-primary{ --_bg: var(--fw-primary); }
+.fw-btn-secondary{ --_bg: var(--fw-secondary); }
+.fw-btn-ghost{
+  --_bg: transparent; --_txt: var(--fw-text); --_bd: var(--fw-border);
+  backdrop-filter: blur(4px);
+}
+.fw-icon-btn{
+  background: transparent; border:1px solid var(--fw-border);
+  color: var(--fw-text); border-radius: 10px; padding: 8px 10px; cursor:pointer;
+}
+.fw-icon-btn:hover{ background: rgba(255,255,255,.05); }
+
+/* ===================== СЕГМЕНТ-КОНТРОЛ (Дохід/Розхід/Борг) ===================== */
+.fw-modes{
+  margin: 0 auto 18px; max-width: var(--fw-maxw); display:flex; gap:8px; padding:6px;
+  border:1px solid var(--fw-border); border-radius: 14px; background: rgba(255,255,255,.02);
+}
+.fw-segment{
+  flex:1; border:none; background:transparent; color:var(--fw-text);
+  padding:12px 10px; border-radius:10px; font-weight:800; cursor:pointer;
+  transition: background .2s ease, transform .08s ease;
+}
+.fw-segment:hover{ background: rgba(255,255,255,.05); }
+.fw-segment.is-active{
+  background: linear-gradient(135deg, color-mix(in srgb, var(--fw-primary), #000 10%), color-mix(in srgb, var(--fw-secondary), #000 10%));
+  box-shadow: inset 0 -2px 0 rgba(255,255,255,.12);
+}
+
+/* ===================== КОНТЕНТ: ЛЕЙАУТ ===================== */
+.fw-content{
+  max-width: var(--fw-maxw);
+  margin: 0 auto 20px;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 16px;
+}
+@media (max-width: 1024px){
+  .fw-content{ grid-template-columns: 1fr; }
+}
+
+/* ===== Категорії ===== */
+.fw-categories{ padding:0; }
+.fw-cat-header{ display:flex; align-items:end; justify-content:space-between; gap:10px; margin-bottom:8px; }
+.fw-cat-search .fw-input{
+  width:100%; padding:10px 12px; border:1px solid var(--fw-border); border-radius:12px;
+  background: rgba(255,255,255,.04); color: var(--fw-text);
+}
+.fw-cat-list{
+  height: var(--fw-cats-h);
+  overflow: auto;
+  padding: 8px;
+  border:1px solid var(--fw-border);
+  border-radius: var(--fw-radius);
+  background: rgba(17,24,39,.6);
+  box-shadow: var(--fw-shadow);
+}
+
+/* Кнопки категорій */
+.fw-cat-list .fw-cat{
+  width:100%;
+  display:block;
+  text-align:left;
+  padding:12px 12px;
+  margin-bottom:8px;
+  border-radius:12px;
+  border:1px solid var(--fw-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255,255,255,.01));
+  color:var(--fw-text);
+  cursor:pointer;
+  transition: transform .08s ease, background .2s ease, border-color .2s ease, box-shadow .2s;
+}
+.fw-cat:hover{
+  background: rgba(255,255,255,.06);
+  border-color: color-mix(in srgb, var(--fw-primary), #000 35%);
+  box-shadow: 0 6px 18px rgba(0,0,0,.25);
+}
+
+/* ===== Форма ===== */
+.fw-form-area .fw-callout{
+  padding: 14px 16px;
+  border:1px solid var(--fw-border);
+  border-radius: 14px;
+  background: rgba(7, 74, 103, 0.08);
+  color: var(--fw-text);
+  margin-bottom: 10px;
+}
+
+.fw-active-cat{
+  display:flex; align-items:center; gap:10px; margin: 6px 0 14px;
+}
+.fw-active-cat-label{ color: var(--fw-muted); font-weight:700; }
+.fw-badge{
+  background: linear-gradient(135deg,var(--fw-secondary), var(--fw-primary));
+  padding:6px 10px; border-radius: 999px; font-weight:800;
+  border:1px solid rgba(255,255,255,.18);
+}
+
+.fw-form{
+  padding: var(--fw-pad);
+  border:1px solid var(--fw-border);
+  border-radius: var(--fw-radius);
+  background: rgba(17,24,39, var(--fw-opacity));
+  box-shadow: var(--fw-shadow);
+}
+.fw-form-grid{
+  display:grid; gap:14px; grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 720px){ .fw-form-grid{ grid-template-columns: 1fr; } }
+
+.fw-field{ display:flex; flex-direction:column; gap:6px; }
+.fw-label{ font-weight:700; font-size:.92rem; }
+.fw-hint{ color: var(--fw-muted); font-size:.8rem; }
+
+.fw-input, .fw-textarea, .fw-select, .fw-input-color{
+  width:100%; color: var(--fw-text);
+  background: rgba(255,255,255,.03);
+  border:1px solid var(--fw-border);
+  border-radius: 12px; padding: 10px 12px;
+  outline:none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.fw-input:focus, .fw-textarea:focus, .fw-select:focus {
+  border-color: color-mix(in srgb, var(--fw-primary), #000 25%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fw-primary), transparent 70%);
+}
+.fw-textarea{ resize: vertical; min-height: 96px; }
+
+.fw-system{
+  display:flex; gap:12px; margin: 8px 0 12px; flex-wrap: wrap;
+}
+.fw-system-item{
+  padding:8px 10px; border-radius:10px; border:1px solid var(--fw-border);
+  background: rgba(255,255,255,.02);
+}
+.fw-form-actions{ display:flex; gap:10px; }
+
+/* ===== Toast ===== */
+.fw-toast{
+  margin-top:12px; min-height: 20px;
+  color: var(--fw-text);
+}
+
+/* ===================== АНАЛІТИКА ===================== */
+.fw-analytics{
+  max-width: var(--fw-maxw);
+  margin: 0 auto 24px;
+  border:1px solid var(--fw-border);
+  border-radius: var(--fw-radius);
+  background: rgba(17,24,39, var(--fw-opacity));
+  box-shadow: var(--fw-shadow);
+  padding: 14px;
+}
+.fw-analytics-header{ display:flex; align-items:baseline; justify-content:space-between; }
+.fw-chart-placeholder{
+  margin-top:12px; height: 280px;
+  border:1px dashed var(--fw-border);
+  border-radius: 12px;
+  display:flex; align-items:center; justify-content:center;
+  color: var(--fw-muted);
+}
+
+/* ===================== ПАНЕЛЬ НАЛАШТУВАНЬ ===================== */
+.fw-settings[hidden]{ display:none !important; }
+
+.fw-settings{
+  position: fixed; inset: 0 0 0 auto; width: 380px; max-width: 92vw;
+  background: rgba(17,24,39, .98);
+  border-left: 1px solid var(--fw-border);
+  box-shadow: -16px 0 32px rgba(0,0,0,.45);
+  padding: 14px;
+  overflow:auto;
+  z-index: 60;
+}
+.fw-settings-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.fw-settings-block{
+  border:1px solid var(--fw-border);
+  border-radius: 14px;
+  background: rgba(255,255,255,.02);
+  padding: 12px; margin-bottom:12px;
+}
+.fw-grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+.fw-grid-3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
+.fw-row{ display:flex; gap:10px; align-items:center; }
+.fw-row.gap{ gap:10px; }
+.fw-settings-footer{ display:flex; gap:10px; justify-content:flex-end; }
+
+/* ===================== СКРОЛБАРИ ===================== */
+.fw-cat-list::-webkit-scrollbar,
+.fw-settings::-webkit-scrollbar{ width: 10px; height: 10px; }
+.fw-cat-list::-webkit-scrollbar-thumb,
+.fw-settings::-webkit-scrollbar-thumb{
+  background: color-mix(in srgb, var(--fw-primary), #000 35%);
+  border-radius: 10px;
+  border: 2px solid rgba(0,0,0,.15);
+}
+.fw-cat-list::-webkit-scrollbar-track,
+.fw-settings::-webkit-scrollbar-track{
+  background: rgba(255,255,255,.04);
+  border-radius:10px;
+}
+
+/* ===================== АДАПТИВ / ДРІБНИЦІ ===================== */
+@media (max-width: 480px){
+  .fw-actions{ gap:6px; }
+  .fw-header{ padding:14px; }
+  .fw-logo{ width:38px; height:38px; border-radius:10px; }
+}

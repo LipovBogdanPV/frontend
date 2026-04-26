@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShiftTime_CRM</title>
+
+  <!-- 🔧 Глобальні змінні (ДО ВСІХ ІНШИХ СКРИПТІВ) -->
+  <script>
+    // ✅ Telegram: fallback chatId (перезапишемо з CONFIG, якщо ключ існує)
+    window.DEFAULT_TG_CHAT_ID = '-1002849519440';
+
+    // ✅ Бекенд API (твій Node/Express)
+    window.SHIFTTIME_API_BASE = '';
+
+    // ✅ Google Apps Script (для читання/запису конфігів/статусів)
+
+       
+    
+            //shifttime-crm-test.netlify.app
+     window.SHEETS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyfGKwSIEhASTWJaayjslWD6wOWDFYyznlmUFih9iofphjPBM4KZwaDdNluxeopkVtrfA/exec';
+    
+    window.SHEETS_SECRET     = 'super-secret-123'; // має збігатися з SHARED_SECRET у GAS
+  </script>
+
+  <script>
+    // ❗ НІЯКИХ localhost у проді
+    window.SHIFTTIME_API_BASE = '';
+
+    // Маршрутизація старих шляхів на Netlify Functions
+    window.__apiMap = {
+      '/api/telegram/send'    : '/.netlify/functions/send-telegram',
+      '/api/orders/set-status': '/.netlify/functions/set-status',
+      '/api/orders/set-ttn'   : '/.netlify/functions/set-ttn',
+      '/api/config/kv'        : '/.netlify/functions/config-links',
+      '/api/np/track'         : '/.netlify/functions/np-track',
+    };
+
+    // Перехоплення fetch → підміна шляхів на функції
+    (function () {
+      const origFetch = window.fetch.bind(window);
+      window.fetch = (input, init) => {
+        try {
+          const urlStr = (typeof input === 'string') ? input : input.url;
+          const u = new URL(urlStr, location.origin);
+          const mapped = window.__apiMap[u.pathname];
+          if (mapped) {
+            const newUrl = mapped + u.search;
+            input = (typeof input === 'string') ? newUrl : new Request(newUrl, input);
+          }
+        } catch (_) {}
+        return origFetch(input, init);
+      };
+    })();
+  </script>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- 🎨 Глобальні стилі сайту -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="widgets/All-orders/css/all-orders.css" />
+
+  <!-- 🌀 Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Якщо буде потрібен CSS Нової Пошти – розкоментуй -->
+  <!-- <link rel="stylesheet" href="widgets/nova-poshta/np-widget.css" /> -->
+
+  <!-- Z-INDEX FIX: щоб дропдаун користувача не ховався під контентом -->
+  <style>
+    header, .app-header, #main-header { position: relative; z-index: 10000; }
+    #user-menu { position: relative; z-index: 10050; }
+    #global-user-dropdown { z-index: 10060; }
+  </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+  <!-- =================================🔼 Верхня панель (ШАПКА) ================================= -->
+  <div id="header"></div>
+
+  <main class="flex-1 flex min-h-0">
+    <!-- Сайдбар -->
+    <div id="sidebar"></div>
+
+    <!-- Контентна частина -->
+    <div class="flex flex-col flex-1 min-h-0">
+      <!-- УВАГА: скрол тут вимикаємо, щоб скролився ТІЛЬКИ сам віджет -->
+      <div class="content-scroll flex justify-center flex-1 min-h-0 overflow-y-hidden">
+        <div id="main-content" class="w-full flex-1 flex flex-col min-h-0"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- =================================🔽 Нижній футер ========================================== -->
+  <div id="footer"></div>
+
+  <!-- 🔧 Додаткові скрипти -->
+  <!-- 1) Стилі віджета шаблонів (має бути вище за ініціалізацію роутера) -->
+  <script defer src="./widgets/template/css.js"></script>
+
+  <!-- 🔻🔻🔻 ВАЖЛИВО: порядок підключення для кнопки «НП» 🔻🔻🔻 -->
+  <!-- 1) Конфіги з Google Sheets (якщо винесеш у файл — підключай тут).
+       Якщо залишаєш інлайн-скрипт вище — цей рядок можна пропустити. -->
+  <!-- <script src="js/app-config.js"></script> -->
+
+  <!-- 2) Віджет НП (npTrackViaGAS, mountNextTo_, інше) -->
+  <script type="module" src="widgets/np-track/np-track-widget.js"></script>
+  <!-- 3) Логіка сторінки «Усі замовлення».
+       Якщо її підтягує твій router динамічно — не дублюй тут. -->
+  <!-- <script src="widgets/All-orders/js/all-orders.js"></script> -->
+  <!-- 🔺🔺🔺 КІНЕЦЬ блоку для «НП» 🔺🔺🔺 -->
+
+  <!-- 2) Ініціалізація компонентів і роутера -->
+  <script type="module">
+    import { loadAllComponents } from './js/load-components.js';
+    import { initRouting } from './js/router.js';
+    import { initAuth } from './widgets/admin/auth.js'; // ⬅️ ДОДАНО: ініціалізація авторизації
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.log('📦 Завантажуємо header/sidebar/footer...');
+      await loadAllComponents();
+
+      // ⬇️ ВАЖЛИВО: викликаємо ПІСЛЯ завантаження хедера, щоб елементи були в DOM
+      try {
+        initAuth({
+          headerTargets: {
+            loginBtn: 'global-login-btn',
+            badgeEl:  'global-user-badge',
+          }
+        });
+      } catch (err) {
+        console.warn('initAuth error:', err);
+      }
+
+      console.log('🧭 Ініціалізація роутінгу...');
+      await initRouting(); // тепер ця функція async
+    });
+  </script>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script defer src="widgets/template/engine.js"></script>
+</body>
+</html>

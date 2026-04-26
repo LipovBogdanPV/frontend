@@ -1,0 +1,52 @@
+<!-- components/forms/form-customer.html -->
+<!-- 📦 Блок форми клієнта: Одержувач, Замовник, Email -->
+
+<!-- 🔷 Вибір партнера -->
+<div>
+  <label for="partner" class="block font-semibold">Партнер:</label>
+  <select id="partner" name="partner" class="w-full rounded border border-gray-300 px-3 py-2">
+    <option value="BORO">BORO</option>
+    <option value="Intex">Intex</option>
+    <option value="">Інше...</option>
+  </select>
+</div>
+
+<!-- 👤 Основна інформація про одержувача -->
+<input type="text" id="surname" name="surname" placeholder="Прізвище одержувача" required class="w-full rounded border px-3 py-2" />
+<input type="text" id="name" name="name" placeholder="Ім’я одержувача" required class="w-full rounded border px-3 py-2" />
+<input type="text" id="patronymic" name="patronymic" placeholder="По батькові одержувача (Не обов’язково)" class="w-full rounded border px-3 py-2" />
+
+<!-- ☎️ Телефон -->
+<input type="text" id="number" name="phone" placeholder="Телефон" required class="w-full rounded border px-3 py-2" />
+<!-- ❗ Поле для повідомлень про помилку формату телефону -->
+<span id="phoneFeedback" class="text-sm text-red-500"></span>
+
+<!-- ✅ Чекбокс: чи потрібен інший одержувач -->
+<label class="flex items-center gap-2">
+  <input type="checkbox" id="otherRecipientToggle" />
+  Інший Одержувач
+</label>
+
+<!-- 🧩 Поля іншого одержувача (з'являються динамічно) -->
+<div id="otherFields" class="hidden space-y-2">
+  <input type="text" id="otherSurname" name="otherSurname" placeholder="Прізвище Замовника" class="w-full rounded border px-3 py-2" />
+  <input type="text" id="otherName" name="otherName" placeholder="Ім’я Замовника" class="w-full rounded border px-3 py-2" />
+  <input type="text" id="otherPhone" name="otherPhone" placeholder="Телефон Замовника" class="w-full rounded border px-3 py-2" />
+  <span id="otherPhoneFeedback" class="text-sm text-red-500"></span>
+</div>
+
+<!-- ✉️ Чекбокс: чи вказувати email -->
+<label class="flex items-center gap-2">
+  <input type="checkbox" id="emailToggle" />
+  Вказати Email
+</label>
+
+<!-- 📧 Email-поле (відображається динамічно) -->
+<div id="emailField" class="hidden">
+  <input type="email" id="email" name="email" placeholder="Email" class="w-full rounded border px-3 py-2" />
+</div>
+
+
+
+
+<!-- components/forms/form-customer.html -->

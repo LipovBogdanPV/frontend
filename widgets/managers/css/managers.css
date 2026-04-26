@@ -1,0 +1,62 @@
+/* widgets/managers/css/managers.css */
+
+:root {
+  --mgr-bg: #3e3f42;
+  --mgr-row-sep: rgba(255,255,255,.08);
+  --mgr-head: #bdbdbd;
+}
+
+.mgr-card {
+  background: var(--mgr-bg);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* 5 колонок: 
+   1) Замовлення в місяць
+   2) Номер замовлення менеджера
+   3) ID — Замовлення
+   4) Прізвище та ім’я
+   5) Дохід (праворуч)
+*/
+.mgr-grid {
+  display: grid;
+  grid-template-columns: 140px 220px 160px 1fr 140px;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+}
+
+.mgr-grid.head {
+  padding: 14px 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--mgr-head);
+}
+
+.mgr-grid.row {
+  border-top: 1px solid var(--mgr-row-sep);
+  font-size: 14px;
+}
+
+.mgr-grid.foot {
+  border-top: 2px solid var(--mgr-row-sep);
+  padding: 14px 12px;
+}
+
+.mono {
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.strong { font-weight: 600; }
+.text-right { text-align: right; }
+
+/* трохи адаптивності */
+@media (max-width: 1100px) {
+  .mgr-grid { grid-template-columns: 110px 180px 140px 1fr 120px; }
+}
+@media (max-width: 900px) {
+  .mgr-grid { grid-template-columns: 90px 150px 120px 1fr 110px; }
+}

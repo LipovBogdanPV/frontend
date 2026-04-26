@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Категорії товарів</title>
+  <link rel="stylesheet" href="CSS/main.css"> <!-- Підключаємо зовнішній CSS-файл -->
+</head>
+<body>
+
+  
+  <!-- header.html -->
+  <div id="header-placeholder"></div>
+
+
+
+<!------------  Блок Категорій  -------------------->
+  <div class="category-block">   
+      <h1>Категорії товарів1</h1>
+
+      <!-- Контейнер, куди будуть додані кнопки -->
+      <div class="button-container" id="categoryContainer"></div>
+  </div>
+
+
+<!------------  Блок ПІДКатегорій  -------------------->
+     
+  <div class="category-block" id="subcategoryBlock">
+      <h2 id="subcategoryTitle" style="margin-top: 40px;"></h2>
+      <div class="button-container" id="subcategoryContainer"></div>
+  </div>
+
+
+ <!------------  Блок Розмірів  -------------------->
+  <div class="category-block" id="sizeSubcategoryBlock">
+      <h2 id="sizeTitle" style="margin-top: 40px;"></h2>
+
+      <div class="button-container" id="sizeContainer"></div>
+  </div>
+
+
+<!------------  Блок АКСЕСУАРІВ  -------------------->
+  <div class="category-block" id="accessoryBlock">
+    
+  <h2 id="accessoryTitle" style="margin-top: 40px;"></h2>
+  <div class="button-container" id="accessoryContainer"></div>
+</div>
+
+<!------------  Блок ДОДАТКОВО  -------------------->
+
+<div class="category-block" id="extraBlock">
+<div style="text-align: right;">
+          <button id="closeExtraBlockBtn" style="
+            background: none;
+            border: none;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #db1f1f;
+            display: none;
+          ">✖</button>
+
+
+</div>
+
+
+
+<h3 id="extraTitle"></h3>
+<div id="extraContainer" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+</div>
+
+
+
+
+
+
+ <div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+
+  <h2 style="margin-top: 50px;">🛒 Замовлення</h2>
+
+<!-- Поля для знижки та передоплати -->
+
+<div style="margin-top: 30px; background-color: #ebe9e9; padding: 15px; border-radius: 10px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center;">
+
+  <!-- Знижка -->
+  <div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+    <label for="discountInput">Знижка (грн):</label>
+    <input type="number" id="discountInput" placeholder="0" style="width: 100px;">
+  </div>
+
+  <!-- Передоплата -->
+  <div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+    <label for="prepaymentInput">Передоплата (грн):</label>
+    <input type="number" id="prepaymentInput" placeholder="0" style="width: 100px;">
+  </div>
+
+  <!-- КНОПКИ З ІНПУТАМИ -->
+ 
+  <div style="display: flex; gap: 20px; align-items: center;">
+
+    <!-- ОЛХ -->
+
+      <div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button id="olxBtn">ОЛХ ДОСТАВКА</button>
+      <input type="number" id="olxInput" placeholder="Вартість" style="display: none; width: 100px;">
+    </div>
+</div>
+
+
+
+
+    <!-- ПРОМ -->
+
+<div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button id="promBtn">ПРОМ Замовлення</button>
+      <input type="number" id="promInput" placeholder="Вартість" style="display: none; width: 100px;">
+    </div>
+</div>
+    <!-- Оплата -->
+
+<div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button id="deliveryBtn">Оплата Доставки</button>
+      <input type="number" id="deliveryInput" placeholder="Вартість" style="display: none; width: 100px;">
+    </div>
+
+    
+  </div>
+</div>
+
+  
+   
+</div>
+
+
+
+ <table id="orderTable" border="1" style="width:100%; margin-top: 20px; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th style="text-align: center;">№</th>
+      <th>Товар</th>
+      <th style="text-align: center;">Розмір</th>
+      <th style="text-align: center;">Додатково</th>
+      <th style="text-align: center;">Ціна</th>
+      <th style="text-align: center;">Видалити</th>
+    </tr>
+  </thead>
+  <tbody id="orderBody">
+    <!-- рядки замовлення додаються тут -->
+  </tbody>
+</table>
+
+<p id="totalPrice" style="font-weight: bold; margin-top: 10px;">Загальна вартість: 0 грн</p>
+
+</div>
+
+      <!------------------------------- 🟦 Кнопка оформлення (буде оброблятися у JS) ------------------------------------------------>
+        <div class="text-center">
+          <button type="button" id="submitAll" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow">
+            📤 Оформити
+          </button>
+        </div>
+
+
+ <!-- Завантаження шапки -->
+  <!-- Завантаження шапки та лише потім запускаємо category.js -->
+<script>
+  fetch('widgets/order/components/header.html')
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById('header-placeholder').innerHTML = html;
+
+      // Завантажуємо category.js лише після вставки хедера
+      const script = document.createElement('script');
+script.src = 'widgets/order/js/category.js';
+script.defer = true; // ⬅️ Скрипт буде виконаний після завершення завантаження HTML
+document.body.appendChild(script);
+
+    });
+</script>
+
+
+</body>
+</html>

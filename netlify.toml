@@ -1,0 +1,93 @@
+# === 1) Що деплоїмо ===
+[build]
+  publish   = "frontend"
+  functions = "frontend/netlify/functions"
+
+# === 2) Публічні ендпоїнти API → Netlify Functions (специфічні ПЕРЕД catch-all) ===
+
+# Config (KEY/VALUE) і Links — обидва сходять у функцію config-links.js
+# KV → /.netlify/functions/config-kv
+[[redirects]]
+  from = "/api/config/kv"
+  to   = "/.netlify/functions/config-kv"
+  status = 200
+  force = true
+
+
+
+
+
+
+# Links → /.netlify/functions/config-links
+[[redirects]]
+  from = "/api/config/links"
+  to   = "/.netlify/functions/config-links"
+  status = 200
+  force = true
+
+# Телеграм та ордери — як було
+[[redirects]]
+  from = "/api/telegram/send"
+  to   = "/.netlify/functions/send-telegram"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/telegram/edit"
+  to   = "/.netlify/functions/edit-telegram"
+  status = 200
+  force = true
+
+
+
+
+
+
+[[redirects]]
+  from = "/api/orders/set-status"
+  to   = "/.netlify/functions/set-status"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/orders/set-ttn"
+  to   = "/.netlify/functions/set-ttn"
+  status = 200
+  force = true
+
+# Catch-all для простих /api/<name> (ОДИН сегмент).
+# Для багатосегментних шляхів (/api/a/b) робимо окремі правила вище.
+[[redirects]]
+  from = "/api/:name"
+  to   = "/.netlify/functions/:name"
+  status = 200
+  force = true
+
+# === 3) SPA фолбек (повинно бути в самому кінці) ===
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
+  status = 200
+
+# === 4) Заголовки (антикеш під час налагодження) ===
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "no-store"
+
+
+
+[[redirects]]
+  from = "/api/auth"
+     
+     to   = "https://script.google.com/macros/s/AKfycbyfGKwSIEhASTWJaayjslWD6wOWDFYyznlmUFih9iofphjPBM4KZwaDdNluxeopkVtrfA/exec"  #   ЛОКАЛЬНО
+  
+  status = 200
+  force = true
+  headers = { Access-Control-Allow-Origin = "*" }
+
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"

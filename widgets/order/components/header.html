@@ -1,0 +1,39 @@
+<!-- header.html -->
+<header style="background-color: #2f2f2f; padding: 10px 20px; color: white; display: flex; align-items: center; justify-content: space-between;">
+  
+  <div style="display: flex; align-items: center;">
+          <div style="font-size: 20px; font-weight: bold;">
+            🛒 Віджет Замовлень
+          </div>
+
+          <div id="active-category-wrapper" style="margin-left: 20px;"></div> <!-- ⬅️ Ось тут буде з’являтися кнопка -->
+          <div id="active-subcategory-wrapper" style="margin-left: 20px;"></div> <!-- ⬅️ Ось тут буде з’являтися кнопка підкатегорій-->
+          <div id="active-size-subcategory-wrapper" style="margin-left: 20px;"></div> <!-- ⬅️ Ось тут буде з’являтися кнопка підкатегорій-->
+  </div>
+ 
+
+  <div style="display: flex; align-items: center;">
+    <nav>
+      <button class="header-btn" onclick="scrollToSection('categoryContainer')">Категорії</button>
+      <button class="header-btn" onclick="scrollToSection('orderContainer')">Замовлення</button>
+    </nav>
+    
+  </div>
+</header>
+
+
+<style>
+  .header-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    margin-left: 15px;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+
+  .header-btn:hover {
+    color: #ffcc00;
+  }
+</style>

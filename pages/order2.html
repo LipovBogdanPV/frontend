@@ -1,0 +1,365 @@
+<head>
+  <style>
+    .tab-content > .tab-pane {
+      display: none;
+    }
+    .tab-content > .active {
+      display: block;
+    }
+      .header-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    margin-left: 15px;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+
+  .header-btn:hover {
+    color: #ffcc00;
+  }
+  </style>
+   <link rel="stylesheet" href="widgets/order/CSS/main.css"> <!-- Підключаємо зовнішній CSS-файл -->
+
+   <!-- 🎨 Підключення стилю для всього сайту -->
+  <link rel="stylesheet" href="css/main.css" />
+
+  <!-- 🌀 Tailwind CSS для швидкої стилізації -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- 📦 Додатковий стиль для віджета Нової Пошти -->
+  <link rel="stylesheet" href="widgets/nova-poshta/css/np-widget.css" />
+</head>
+<body>
+
+<header style="background-color: #2f2f2f; padding: 10px 20px; color: white; display: flex; align-items: center; justify-content: space-between;">
+  
+  <div style="display: flex; align-items: center;">
+          <div style="font-size: 20px; font-weight: bold;">
+            🛒 Віджет Замовлень
+          </div>
+
+          <div id="active-category-wrapper" style="margin-left: 20px;"></div> <!-- ⬅️ Ось тут буде з’являтися кнопка -->
+          <div id="active-subcategory-wrapper" style="margin-left: 20px;"></div> <!-- ⬅️ Ось тут буде з’являтися кнопка підкатегорій-->
+          <div id="active-size-subcategory-wrapper" style="margin-left: 20px;"></div> <!-- ⬅️ Ось тут буде з’являтися кнопка підкатегорій-->
+  </div>
+ 
+
+  <div style="display: flex; align-items: center;">
+    <!-- Перемикач -->
+    <ul class="nav nav-tabs" id="formTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="customer-tab" data-bs-toggle="tab" data-bs-target="#customer-form" type="button" role="tab">
+          👤 Клієнт
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="address-tab" data-bs-toggle="tab" data-bs-target="#address-form" type="button" role="tab">
+          📦 Адреса
+        </button>
+      </li>
+    </ul>
+  </div>
+</header>
+
+
+
+  <!-- Контейнери для віджетів -->
+   <div class="tab-content p-3" id="formTabsContent">
+    <div class="tab-pane fade show active" id="customer-form" role="tabpanel">
+        <div id="nova-poshta-widget" class="tab-content">
+            <!-- 🧾 Контейнер з формою -->
+            <div id="form-container" class="flex-1 p-4 overflow-y-auto max-h-[92vh]">
+                <!-- 🔘 Основна форма -->
+                <form id="form" novalidate class="bg-white p-4 sm:p-6 rounded shadow-md space-y-4 max-w-xl mx-auto">
+
+                <!-- 👤 Блок із даними клієнта (додається динамічно з form-customer.html) -->
+                <div id="form-customer-block"></div>
+
+                <!-- 🏠 Блок із адресою (додається з form-address.html) -->
+                <div id="form-address-block"></div>
+
+                <!-- 📦 Віджет Нової Пошти (буде ініціалізовано з JS) -->
+                
+
+                <!-- 🫥 Приховані поля для передачі адресних даних у бекенд -->
+                <input type="hidden" id="hidden-region" name="region" />
+                <input type="hidden" id="hidden-city" name="city" />
+                <input type="hidden" id="hidden-district" name="district" />
+                <input type="hidden" id="hidden-warehouse" name="warehouse" />
+                <input type="hidden" id="hidden-street" name="street" />
+                <input type="hidden" id="hidden-warehouse-number" name="warehouseNumber" />
+                <input type="hidden" id="hidden-warehouse-type" name="warehouseType" />
+
+                <!-- 📢 Повідомлення про статус відправки -->
+                <div id="response" class="text-center text-sm mt-2"></div>
+
+                <!-- 🟦 Кнопка оформлення (буде оброблятися у JS) -->
+                <div class="text-center">
+                    <button type="submit" id="submitAll" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow">
+                    📤 Оформити
+                    </button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tab-pane fade" id="address-form" role="tabpanel">
+        <div id="orders-widget">
+            <!-- header.html -->
+  <div id="header-placeholder"></div>
+
+
+
+<!------------  Блок Категорій  -------------------->
+  <div class="category-block">   
+      <h1>Категорії товарів</h1>
+
+      <!-- Контейнер, куди будуть додані кнопки -->
+      <div class="button-container" id="categoryContainer"></div>
+  </div>
+
+
+<!------------  Блок ПІДКатегорій  -------------------->
+     
+  <div class="category-block" id="subcategoryBlock">
+      <h2 id="subcategoryTitle" style="margin-top: 40px;"></h2>
+      <div class="button-container" id="subcategoryContainer"></div>
+  </div>
+
+
+ <!------------  Блок Розмірів  -------------------->
+  <div class="category-block" id="sizeSubcategoryBlock">
+      <h2 id="sizeTitle" style="margin-top: 40px;"></h2>
+
+      <div class="button-container" id="sizeContainer"></div>
+  </div>
+
+
+<!------------  Блок АКСЕСУАРІВ  -------------------->
+  <div class="category-block" id="accessoryBlock">
+    
+  <h2 id="accessoryTitle" style="margin-top: 40px;"></h2>
+  <div class="button-container" id="accessoryContainer"></div>
+</div>
+
+<!------------  Блок ДОДАТКОВО  -------------------->
+
+<div class="category-block" id="extraBlock">
+<div style="text-align: right;">
+          <button id="closeExtraBlockBtn" style="
+            background: none;
+            border: none;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #db1f1f;
+            display: none;
+          ">✖</button>
+
+
+</div>
+
+
+
+<h3 id="extraTitle"></h3>
+<div id="extraContainer" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+</div>
+
+
+
+
+
+
+ <div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+
+  <h2 style="margin-top: 50px;">🛒 Замовлення</h2>
+
+<!-- Поля для знижки та передоплати -->
+
+<div style="margin-top: 30px; background-color: #ebe9e9; padding: 15px; border-radius: 10px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center;">
+
+  <!-- Знижка -->
+  <div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+    <label for="discountInput">Знижка (грн):</label>
+    <input type="number" id="discountInput" placeholder="0" style="width: 100px;">
+  </div>
+
+  <!-- Передоплата -->
+  <div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+    <label for="prepaymentInput">Передоплата (грн):</label>
+    <input type="number" id="prepaymentInput" placeholder="0" style="width: 100px;">
+  </div>
+
+  <!-- КНОПКИ З ІНПУТАМИ -->
+ 
+  <div style="display: flex; gap: 20px; align-items: center;">
+
+    <!-- ОЛХ -->
+
+      <div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button id="olxBtn">ОЛХ ДОСТАВКА</button>
+      <input type="number" id="olxInput" placeholder="Вартість" style="display: none; width: 100px;">
+    </div>
+</div>
+
+
+
+
+    <!-- ПРОМ -->
+
+<div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button id="promBtn">ПРОМ Замовлення</button>
+      <input type="number" id="promInput" placeholder="Вартість" style="display: none; width: 100px;">
+    </div>
+</div>
+    <!-- Оплата -->
+
+<div style="background-color: #ffffff; border-radius: 10px; padding: 20px;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button id="deliveryBtn">Оплата Доставки</button>
+      <input type="number" id="deliveryInput" placeholder="Вартість" style="display: none; width: 100px;">
+    </div>
+
+    
+  </div>
+</div>
+
+  
+   
+</div>
+
+
+
+ <table id="orderTable" border="1" style="width:100%; margin-top: 20px; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th style="text-align: center;">№</th>
+      <th>Товар</th>
+      <th style="text-align: center;">Розмір</th>
+      <th style="text-align: center;">Додатково</th>
+      <th style="text-align: center;">Ціна</th>
+      <th style="text-align: center;">Видалити</th>
+    </tr>
+  </thead>
+  <tbody id="orderBody">
+    <!-- рядки замовлення додаються тут -->
+  </tbody>
+</table>
+
+<p id="totalPrice" style="font-weight: bold; margin-top: 10px;">Загальна вартість: 0 грн</p>
+
+</div>
+
+      <!------------------------------- 🟦 Кнопка оформлення (буде оброблятися у JS) ---------------------------------------------->
+        <!-- 👇 Кнопка-дублер, яка натискає реальну submitAll -->
+<div class="text-center mt-4">
+  <button type="button" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow"
+          onclick="document.getElementById('submitAll')?.click()">
+    📤 Оформити
+  </button>
+</div>
+  
+
+
+        </div>
+    </div>
+   </div>
+   
+   <!-- Скрипти віджетів (підключаємо після того як HTML вже буде вставлено) -->
+  <script type="module">
+    import { initNovaPoshta } from '../widgets/nova-poshta/js/main_adres.js';
+
+    async function loadComponent(id, path) {
+      try {
+        const res = await fetch(path);
+        const html = await res.text();
+        const el = document.getElementById(id);
+        if (el) {
+          el.innerHTML = html;
+          console.log(`📥 Компонент вставлено у #${id}: ${path}`);
+
+          // 🧠 Чекаємо DOM-рендер
+          await new Promise((resolve) => requestAnimationFrame(resolve));
+          console.log(`✅ DOM оновлено після вставки ${id}`);
+        } else {
+          console.warn(`⚠️ Не знайдено контейнер з ID: #${id}`);
+        }
+      } catch (err) {
+        console.error(`❌ Помилка при завантаженні ${path}`, err);
+      }
+    }
+
+    async function loadAllComponents() {
+      await loadComponent("form-customer-block", "../widgets/nova-poshta/components/forms/form-address.html");
+      await loadComponent("form-address-block", "../widgets/nova-poshta/components/forms/form-customer.html");
+
+      console.log("✅ Компоненти завантажено — перевіряємо чекбокси...");
+
+      // 🔧 Ініціалізація Nova Poshta
+      await initNovaPoshta();
+
+      // 👇 Логіка чекбоксів
+      setTimeout(() => {
+        const otherToggle = document.getElementById("otherRecipientToggle");
+        const otherBlock = document.getElementById("otherFields");
+        const emailToggle = document.getElementById("emailToggle");
+        const emailField = document.getElementById("emailField");
+
+        if (!otherToggle || !otherBlock) {
+          console.warn("❗ Не знайдено поля для іншого одержувача");
+        } else {
+          console.log("🔘 Знайдено поле 'Інший Одержувач'");
+          otherToggle.addEventListener("change", () => {
+            otherBlock.classList.toggle("hidden", !otherToggle.checked);
+            console.log(`▶️ toggle otherFields: ${otherToggle.checked}`);
+          });
+          otherBlock.classList.toggle("hidden", !otherToggle.checked);
+        }
+
+        if (!emailToggle || !emailField) {
+          console.warn("❗ Не знайдено поля для email");
+        } else {
+          console.log("🔘 Знайдено поле 'Email'");
+          emailToggle.addEventListener("change", () => {
+            emailField.classList.toggle("hidden", !emailToggle.checked);
+            console.log(`▶️ toggle emailField: ${emailToggle.checked}`);
+          });
+          emailField.classList.toggle("hidden", !emailToggle.checked);
+        }
+      }, 100);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("📥 DOMContentLoaded");
+      loadAllComponents();
+    });
+  </script>
+
+    <!-- 🚀 2. Логіка кнопки "Оформити" (збір полів, перевірка, відправка) -->
+  <script type="module">
+    import { initSubmitAll } from '../widgets/nova-poshta/js/submit-all.js';
+
+    // Чекаємо поки всі HTML-компоненти будуть довантажені
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        console.log("🧩 Усі компоненти завантажено, ініціалізуємо submit-all...");
+        initSubmitAll();
+      }, 500);
+    });
+  </script>
+<!-- Завантаження шапки -->
+  <!-- Завантаження шапки та лише потім запускаємо category.js -->
+
+
+
+
+<script type="module" src="../js/router.js"></script>
+
+
+
+</body>

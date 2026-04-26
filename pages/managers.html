@@ -1,0 +1,56 @@
+<div id="managers-root" class="h-full flex flex-col text-zinc-200">
+  <!-- Липка шапка -->
+  <div id="mgr-header" class="sticky top-0 z-10 bg-zinc-900 border-b border-zinc-800">
+    <div class="px-4 py-2 flex flex-wrap items-center gap-2">
+
+      <!-- Кнопки -->
+      <div class="flex items-center gap-2">
+        <button id="btn-income" type="button"
+                class="px-3 py-1.5 rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-sm">
+          Дохід
+        </button>
+        <button id="btn-work" type="button"
+                class="px-3 py-1.5 rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-sm">
+          Робота
+        </button>
+        <button id="btn-salary" type="button"
+                class="px-3 py-1.5 rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-sm">
+          Зарплата
+        </button>
+        <button id="btn-stat" type="button"
+                class="px-3 py-1.5 rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-sm">
+          Статистика
+        </button>
+        <button id="btn-analytics" type="button"
+                class="px-3 py-1.5 rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-sm">
+          Аналітика
+        </button>
+        <button id="btn-profitability" type="button"
+                class="px-3 py-1.5 rounded-md border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-sm">
+          Рентабельність
+        </button>
+      </div>
+
+      <div class="ml-auto flex items-center gap-2">
+        <label class="text-xs text-zinc-400">Рік
+          <select id="mgr-year" class="ml-1 bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm"></select>
+        </label>
+        <label class="text-xs text-zinc-400">Місяць
+          <select id="mgr-month" class="ml-1 bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm"></select>
+        </label>
+        <label class="text-xs text-zinc-400">Менеджер
+          <select id="mgr-manager" class="ml-1 bg-zinc-900 border border-zinc-700 rounded px-2 py-1 text-sm">
+            <option value="">Усі</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Основний блок (один скрол) -->
+  <div id="mgr-scroll" class="flex-1 overflow-auto">
+    <div class="p-4">
+      <div id="mgr-table"></div>
+    </div>
+  </div>
+</div>

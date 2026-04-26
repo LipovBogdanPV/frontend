@@ -1,0 +1,425 @@
+<!-- =========================================================================
+File: /frontend/pages/admin.html
+Purpose: Admin Settings page with left sidebar & full-width content.
+Notes:
+- Візуальний layout і темування керуються /frontend/widgets/admin/admin.css
+- Логіка табів/таблиць: /frontend/widgets/admin/admin.js (ініт у router.js)
+- Авторизація/бейдж: /frontend/widgets/admin/auth.js (глобальний init у router.js)
+- Темізатор (CSS-змінні): /frontend/widgets/admin/theme.js → пише в <style id="admin-theme-vars">
+=========================================================================== -->
+
+<!-- Базові стилі адмінки -->
+<link rel="stylesheet" href="widgets/admin/admin.css?v=3">
+
+
+
+
+
+<!-- Контейнер для CSS-змінних, у які theme.js підставляє значення -->
+<style id="admin-theme-vars"></style>
+
+<div id="admin-root" class="min-h-[calc(100vh-64px)] w-full text-white">
+  <!-- Внутрішня шапка сторінки -->
+  <div class="sticky top-0 z-10 backdrop-blur bg-black/40 border-b border-white/10">
+    <div class="admin-header w-full py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-xl bg-white/5 grid place-items-center"><span class="text-lg">⚙️</span></div>
+        <div>
+          <h2 class="text-xl font-semibold leading-tight">Адмін-панель</h2>
+          <p class="text-xs text-white/60">Керуйте користувачами, ролями та видимістю блоків у СРМ</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Бейдж користувача (видимий після входу) -->
+        <div id="admin-user-badge" class="hidden items-center gap-3">
+          <img id="admin-user-photo" class="h-8 w-8 rounded-full object-cover" alt="user" />
+          <div class="leading-tight">
+            <div id="admin-user-name" class="text-sm font-medium">Користувач</div>
+            <div id="admin-user-email" class="text-xs text-white/60">email@example.com</div>
+          </div>
+          <button id="admin-btn-logout" class="btn btn-ghost sm">Вийти</button>
+        </div>
+
+        <!-- Кнопка входу (ховається після логіну) -->
+        <button id="admin-btn-login" class="btn btn-primary sm">Увійти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Дві колонки: меню (зліва) | контент (справа) -->
+  <div id="admin-layout" class="w-full">
+    <!-- Sidebar -->
+    <aside class="admin-aside">
+      <button type="button" data-admin-tab="users"      class="admin-tab-btn">Користувачі</button>
+      <button type="button" data-admin-tab="roles"      class="admin-tab-btn">Ролі</button>
+      <button type="button" data-admin-tab="visibility" class="admin-tab-btn">Видимість блоків</button>
+      <button type="button" data-admin-tab="settings"   class="admin-tab-btn">Загальні налаштування</button>
+    </aside>
+
+    <!-- Main content -->
+    <main class="admin-main">
+      <!-- ========== USERS TAB ========== -->
+      <section data-admin-panel="users" class="admin-panel">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3 class="card-title">Користувачі</h3>
+              <p class="muted">Додавання, редагування, призначення ролей</p>
+            </div>
+            <div class="row gap">
+              <select id="usersRoleFilter" class="input sm">
+                <option value="">Усі ролі</option>
+                <option value="admin">ADMIN</option>
+                <option value="manager">manager</option>
+                <option value="user">user</option>
+              </select>
+              <button id="btnToggleUsersLive" class="btn btn-primary sm">Показати користувачів</button>
+              <button id="btnInviteUser"      class="btn btn-ghost sm">Запросити</button>
+              <button id="btnAddUser"         class="btn btn-ghost sm">Додати вручну</button>
+            </div>
+          </div>
+
+          <!-- Демо-таблиця (локальні дані) -->
+          <div class="card-body scroll-x">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Користувач</th>
+                  <th>Email</th>
+                  <th>Ролі</th>
+                  <th>Статус</th>
+                  <th class="text-right">Дії</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-tbody"></tbody>
+            </table>
+          </div>
+
+          <!-- Жива таблиця (дані з Google Sheets/AppScript) -->
+          <div class="card-body">
+            <div id="usersLiveBlock" class="hidden">
+              <table class="tbl" style="width: var(--table-w, 100%);">
+                <thead>
+                  <tr>
+                    <th>№</th>
+                    <th>Користувач</th>
+                    <th>Телефон</th>
+                    <th>Email</th>
+                    <th>Логін</th>
+                    <th>Роль</th>
+                    <th>Коментар</th>
+                    <th class="text-right">Дії</th>
+                  </tr>
+                </thead>
+                <tbody id="users-live-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== ROLES TAB ========== -->
+      <section data-admin-panel="roles" class="admin-panel hidden">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3 class="card-title">Ролі</h3>
+              <p class="muted">Список ролей та дозволів</p>
+            </div>
+            <button id="btnCreateRole" class="btn btn-primary sm">Створити роль</button>
+          </div>
+          <div class="card-body" id="admin-roles-container"><!-- roles render here --></div>
+        </div>
+      </section>
+
+      <!-- ========== VISIBILITY TAB ========== -->
+      <section data-admin-panel="visibility" class="admin-panel hidden">
+        <div class="card">
+          <div class="card-head">
+            <h3 class="card-title">Видимість блоків</h3>
+            <p class="muted">Увімкніть/вимкніть елементи інтерфейсу для вибраних ролей</p>
+          </div>
+
+          <div class="card-body stack">
+            <div class="item">
+              <div class="item-col">
+                <div class="item-title">Блок “Замовлення”</div>
+                <div class="muted">data-key="block-orders"</div>
+              </div>
+              <div class="item-actions row gap">
+                <label class="muted sm">Для ролі:</label>
+                <select class="input sm admin-role-select"></select>
+                <button class="btn btn-ghost sm admin-toggle-visibility" data-key="block-orders">Перемкнути</button>
+              </div>
+            </div>
+
+            <div class="item">
+              <div class="item-col">
+                <div class="item-title">Блок “Нова Пошта”</div>
+                <div class="muted">data-key="block-novaposhta"</div>
+              </div>
+              <div class="item-actions row gap">
+                <label class="muted sm">Для ролі:</label>
+                <select class="input sm admin-role-select"></select>
+                <button class="btn btn-ghost sm admin-toggle-visibility" data-key="block-novaposhta">Перемкнути</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== SETTINGS TAB (КОНСТРУКТОР ТЕМ) ========== -->
+      <section data-admin-panel="settings" class="admin-panel hidden">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3 class="card-title">Загальні налаштування</h3>
+              <p class="muted">Тема інтерфейсу, типографіка, таблиці, відступи, ширини.</p>
+            </div>
+
+            <!-- Кнопки керування шириною панелі -->
+            <div class="row gap nowrap">
+              <button id="btn-settings-fixed" class="btn btn-ghost sm" title="Повернути фіксовану ширину">
+                Фіксована
+              </button>
+              <button id="btn-settings-full" class="btn btn-primary sm" title="Розгорнути на всю ширину">
+                На всю
+              </button>
+            </div>
+          </div>
+
+          <!-- Внутрішня область з керованими шириною/масштабом/відступами -->
+          <div class="settings-viewport">
+            <div class="settings-resize">
+              <!-- Ручка перетягування (правий край) -->
+              <div class="settings-resize-handle" title="Потягніть, щоб змінити ширину"></div>
+
+              <div class="settings-zoom">
+                <div class="grid-12 gap-16">
+
+                  <!-- Ліва колонка -->
+                  <div class="col-4">
+                    <div class="muted mb-2">Профілі</div>
+
+                    <div class="row gap align-end">
+                      <div class="grow">
+                        <label class="muted block mb-1">Збережені теми</label>
+                        <select id="th-saved" class="input">
+                          <option value="">— Оберіть тему —</option>
+                        </select>
+                      </div>
+                      <button id="th-load" class="btn">Застосувати</button>
+                    </div>
+
+                    <div class="mt-6">
+                      <label class="muted block mb-1">Назва нової теми</label>
+                      <input id="th-name" class="input" placeholder="наприклад, Моя темна" />
+                    </div>
+
+                    <div class="row gap mt-3">
+                      <button id="th-save"   class="btn btn-primary">Зберегти тему</button>
+                      <button id="th-delete" class="btn btn-ghost">Видалити</button>
+                      <button id="th-reset"  class="btn btn-ghost">Скинути</button>
+                    </div>
+
+                    <hr class="sep" />
+
+                    <!-- Додаткові параметри полотна налаштувань -->
+                    <div class="grid-2 gap-10">
+                      <div>
+                        <label class="muted block mb-1">Макс. ширина панелі (px)</label>
+                        <input id="th-settings-maxw" type="number" class="input" value="1600" min="1000" step="20" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Внутр. падінг по X (px)</label>
+                        <input id="th-settings-pad-x" type="number" class="input" value="16" min="0" step="2" />
+                      </div>
+                    </div>
+
+                    <hr class="sep" />
+
+                    <!-- Відступи сторінки/макета -->
+                    <div class="grid-2 gap-10">
+                      <div>
+                        <label class="muted block mb-1">Відступи зліва/справа (px)</label>
+                        <input id="th-content-x" type="number" class="input" value="24" min="0" step="2" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Проміжок меню–контент (px)</label>
+                        <input id="th-gap" type="number" class="input" value="28" min="0" step="2" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Ширина меню (px)</label>
+                        <input id="th-sidebar" type="number" class="input" value="260" min="160" step="10" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Зсув від сайдбара (px)</label>
+                        <input id="th-offset-left" type="number" class="input" value="12" min="0" step="2" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Макс. ширина контенту (px)</label>
+                        <input id="th-maxw" type="number" class="input" value="1400" min="980" step="20" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Ширина таблиці (%)</label>
+                        <input id="th-tablew" type="number" class="input" value="100" min="50" max="100" step="5" />
+                      </div>
+                    </div>
+
+                    <hr class="sep" />
+
+                    <!-- Параметри самої панелі налаштувань -->
+                    <div class="grid-2 gap-10">
+                      <div>
+                        <label class="muted block mb-1">Відступ панелі зверху (px)</label>
+                        <input id="th-panel-mt" type="number" class="input" value="24" min="0" step="2" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Відступ панелі знизу (px)</label>
+                        <input id="th-panel-mb" type="number" class="input" value="24" min="0" step="2" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Запас під футер (px)</label>
+                        <input id="th-footer-h" type="number" class="input" value="52" min="0" step="2" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Ширина панелі (px)</label>
+                        <input id="th-settings-w" type="number" class="input" value="1100" min="700" step="20" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Мін. ширина (px)</label>
+                        <input id="th-settings-minw" type="number" class="input" value="720" min="600" step="10" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Масштаб панелі (0.8–1.5)</label>
+                        <input id="th-settings-zoom" type="number" class="input" value="1" min="0.8" max="1.5" step="0.05" />
+                      </div>
+                      <div>
+                        <label class="muted block mb-1">Відстань між блоками (px)</label>
+                        <input id="th-settings-gap" type="number" class="input" value="32" min="8" step="2" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Права колонка -->
+                  <div class="col-8">
+                    <!-- Кольори -->
+                    <div class="muted mb-2">Кольори</div>
+                    <div class="grid-3 gap-10">
+                      <div><label class="muted block mb-1">Фон сторінки</label>     <input id="th-c-page"   type="color" class="input color" value="#0b0b0f" /></div>
+                      <div><label class="muted block mb-1">Текст</label>            <input id="th-c-text"   type="color" class="input color" value="#ffffff" /></div>
+                      <div><label class="muted block mb-1">Приглушений текст</label><input id="th-c-dim"    type="color" class="input color" value="#a0a0a0" /></div>
+                      <div><label class="muted block mb-1">Фон карток</label>       <input id="th-card-bg"  type="color" class="input color" value="#111318" /></div>
+                      <div><label class="muted block mb-1">Рамка карток</label>     <input id="th-card-br"  type="color" class="input color" value="#2a2f3a" /></div>
+                      <div><label class="muted block mb-1">Акцент</label>           <input id="th-accent"   type="color" class="input color" value="#ffffff" /></div>
+                    </div>
+
+                    <!-- Типографіка -->
+                    <div class="muted mb-2 mt-8">Типографіка</div>
+                    <div class="grid-3 gap-10">
+                      <div><label class="muted block mb-1">Розмір базовий (px)</label><input id="th-base-fz"        type="number" class="input" value="14"  min="12" max="18" step="1" /></div>
+                      <div><label class="muted block mb-1">Жирність тексту</label>    <input id="th-font-weight"    type="number" class="input" value="400" min="300" max="900" step="100" /></div>
+                      <div><label class="muted block mb-1">Жирність заголовків</label><input id="th-heading-weight" type="number" class="input" value="600" min="400" max="900" step="100" /></div>
+                      <div>
+                        <label class="muted block mb-1">Курсив</label>
+                        <select id="th-font-style" class="input">
+                          <option value="normal" selected>Вимкнено</option>
+                          <option value="italic">Курсив</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <!-- Кнопки -->
+                    <div class="muted mb-2 mt-8">Кнопки</div>
+                    <div class="grid-3 gap-10">
+                      <div><label class="muted block mb-1">Фон (звичайної)</label>  <input id="th-btn-bg"         type="color" class="input color" value="#ffffff" /></div>
+                      <div><label class="muted block mb-1">Текст (звичайної)</label> <input id="th-btn-text"       type="color" class="input color" value="#111318" /></div>
+                      <div><label class="muted block mb-1">Радіус (px)</label>      <input id="th-btn-radius"     type="number" class="input" value="12" min="0" step="1" /></div>
+                      <div><label class="muted block mb-1">Фон ghost</label>        <input id="th-btn-ghost-bg"   type="color" class="input color" value="#262a34" /></div>
+                      <div><label class="muted block mb-1">Текст ghost</label>      <input id="th-btn-ghost-text" type="color" class="input color" value="#ffffff" /></div>
+                    </div>
+
+                    <!-- Таблиці -->
+                    <div class="muted mb-2 mt-8">Таблиці</div>
+                    <div class="grid-3 gap-10">
+                      <div><label class="muted block mb-1">Фон заголовка</label>    <input id="th-table-head"   type="color" class="input color" value="#242833" /></div>
+                      <div><label class="muted block mb-1">Ховер рядка</label>      <input id="th-table-row"    type="color" class="input color" value="#1e212a" /></div>
+                      <div><label class="muted block mb-1">Колір бордерів</label>   <input id="th-table-border" type="color" class="input color" value="#2a2f3a" /></div>
+                      <div><label class="muted block mb-1">Падінг X</label>         <input id="th-table-px"     type="number" class="input" value="16" min="0" step="2" /></div>
+                      <div><label class="muted block mb-1">Падінг Y</label>         <input id="th-table-py"     type="number" class="input" value="12" min="0" step="2" /></div>
+                    </div>
+
+                    <div class="mt-10">
+                      <button id="th-apply" class="btn btn-primary">Застосувати зміни</button>
+                      <span class="muted ml-3">Застосування відбувається через CSS-змінні без перезавантаження.</span>
+                    </div>
+                  </div>
+
+                </div><!-- /grid-12 -->
+              </div><!-- /settings-zoom -->
+            </div><!-- /settings-resize -->
+          </div><!-- /settings-viewport -->
+
+        </div>
+      </section>
+      <!-- ========== /END SETTINGS TAB ========== -->
+    </main>
+  </div>
+
+  <!-- Login/Registration Modal -->
+  <div id="admin-login-modal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-lg rounded-2xl bg-[#111318] border border-white/10 shadow-xl">
+      <div class="p-4 border-b border-white/10 flex items-center justify-between">
+        <div class="text-lg font-semibold">Обліковий запис</div>
+        <div class="row gap sm">
+          <button id="tab-login"    class="btn btn-primary sm">Вхід</button>
+          <button id="tab-register" class="btn btn-ghost sm">Реєстрація</button>
+        </div>
+        <button id="admin-modal-close" class="btn btn-ghost sm">✕</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="pane-login" class="p-4 stack">
+        <div>
+          <label class="muted sm">Логін або Email</label>
+          <input id="login-identifier" class="input" placeholder="login або email" />
+        </div>
+        <div>
+          <label class="muted sm">Пароль</label>
+          <input id="login-password" type="password" class="input" placeholder="••••••••" />
+        </div>
+        <div id="login-error" class="err hidden"></div>
+        <button id="btnDoLogin" class="btn btn-primary">Увійти</button>
+        <div class="muted center sm">Або</div>
+        <button id="btnLoginWithGoogle" class="btn btn-ghost">Увійти через Google (mock)</button>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="pane-register" class="p-4 stack hidden">
+        <div class="grid-2 gap-10">
+          <div><label class="muted sm">Прізвище</label> <input id="reg-surname" class="input" placeholder="Прізвище" /></div>
+          <div><label class="muted sm">Ім'я</label>     <input id="reg-name"    class="input" placeholder="Ім'я" /></div>
+          <div><label class="muted sm">Телефон</label>  <input id="reg-phone"   class="input" placeholder="+380..." /></div>
+          <div><label class="muted sm">Email</label>    <input id="reg-email"   class="input" placeholder="email@example.com" /></div>
+          <div><label class="muted sm">Логін</label>    <input id="reg-login"   class="input" placeholder="login" /></div>
+          <div><label class="muted sm">Пароль</label>   <input id="reg-password" type="password" class="input" placeholder="••••••••" /></div>
+        </div>
+        <div id="reg-error" class="err hidden"></div>
+        <button id="btnDoRegister" class="btn btn-primary">Зареєструватися</button>
+        <div class="muted center sm">Роль призначить адміністратор у таблиці “Користувачі”.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Темізатор (пише CSS-змінні у #admin-theme-vars, слухає кнопки/ручку resize) -->
+
+
+<!-- Підказка для router.js (в тебе вже налаштовано):
+  if (pageName === 'admin') {
+    const authMod = await import('../widgets/admin/auth.js');
+      const pageMod = await import('../widgets/admin/admin.js');
+    pageMod.initAdminPage?.();
+  }
+-->

@@ -1,0 +1,58 @@
+<!-- frontend/components/widgets/header-orders.html -->
+<!-- 🔵 Шапка, яка тягнеться на всю ширину. Завантажується в #widget-header. -->
+<div id="widget-header-origin" class="w-full bg-white shadow px-6 py-4 mb-6">
+  <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+    <!-- Ліворуч: заголовок -->
+    <h2 class="text-xl font-bold m-0">Нова Пошта</h2>
+
+    <!-- Динамічні “чіпи” активних виборів (категорія/підкатегорія/розмір) -->
+    <div class="d-flex align-items-center gap-2 flex-wrap" style="margin-left: 20px;">
+      <div id="active-category-wrapper"></div>
+      <div id="active-subcategory-wrapper"></div>
+      <div id="active-size-subcategory-wrapper"></div>
+    </div>
+
+    <!-- Праворуч: панель керування -->
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <!-- Очистити все -->
+      <button id="clear-all-btn" type="button" class="bg-green-100 text-blue-800 px-4 py-2 rounded">
+        🌐 Очистити
+      </button>
+
+      <!-- Перемикач вкладок -->
+      <div class="btn-group">
+        <button id="btnOrderWidget" type="button" class="btn btn-outline-dark px-4 py-2 rounded">
+          📦 Товари
+        </button>
+        <button id="btnNovaWidget" type="button" class="btn btn-outline-dark px-4 py-2 rounded">
+          🚚 Доставка
+        </button>
+      </div>
+
+      <!-- Режим “Показати обидва” -->
+      <div class="form-check form-switch d-inline-flex align-items-center ms-2">
+        <input class="form-check-input" type="checkbox" id="toggleBoth" />
+        <label class="form-check-label ms-1" for="toggleBoth" title="Показати обидва віджети"></label>
+      </div>
+
+      <!-- 🔄 Орієнтація (для режиму “обидва”): вертикально/горизонтально -->
+      <div class="btn-group">
+        <button id="btnLayoutVertical" type="button" class="btn btn-outline-dark px-3 py-2 rounded" title="Один під одним">
+          Вертикально
+        </button>
+        <button id="btnLayoutHorizontal" type="button" class="btn btn-outline-dark px-3 py-2 rounded" title="Дві колонки">
+          Горизонтально
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ▼ Контейнери вкладок -->
+<div id="tabs-wrapper" class="layout-horizontal" style="margin-top:12px">
+  <!-- СПОЧАТКУ ТОВАРИ (ліворуч у горизонтальній орієнтації) -->
+  <section id="tovar" class="tab-pane hidden"></section>
+  <!-- ПОТІМ НОВА ПОШТА (праворуч у горизонтальній орієнтації) -->
+  <section id="nova-poshta" class="tab-pane"></section>
+</div>
+<!-- ▲ Контейнери вкладок -->

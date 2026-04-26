@@ -1,0 +1,355 @@
+/* ============================================================================
+  File: /frontend/widgets/admin/admin.css
+  Purpose: Адмін-лейаут, тема, контролі, ресайз/зум панелі налаштувань.
+  Все працює через CSS-змінні в #admin-root (theme.js їх оновлює).
+============================================================================ */
+
+/* ----------------------- БАЗОВІ ЗМІННІ (дефолт) --------------------------- */
+#admin-root{
+  /* Макет */
+  --sidebar-w: 260px;                 /* ширина лівого меню */
+  --admin-gap: 28px;                  /* проміжок між меню та контентом */
+  --content-x: 24px;                  /* горизонтальні відступи в header/main */
+  --offset-left: 12px;                /* дод. зсув від глобального сайдбара */
+  --content-max: 1400px;              /* максимум ширини вмісту */
+
+  /* Тема сторінки */
+  --page-bg: #0b0b0f;
+  --text: #ffffff;
+  --muted: #a0a0a0;
+  --accent: #ffffff;
+
+  /* Картки */
+  --card-bg: #111318;
+  --card-br: #2a2f3a;
+  --card-border-w: 1px;
+  --card-radius: 16px;
+  --card-shadow: 0 10px 30px rgba(0,0,0,.25);
+
+  /* Кнопки/поля */
+  --btn-bg: #ffffff;
+  --btn-text: #111318;
+  --btn-bg-ghost: rgba(255,255,255,.1);
+  --btn-text-ghost: #ffffff;
+  --btn-radius: 12px;
+  --btn-shadow: none;
+
+  /* Таблиці */
+  --table-w: 100%;
+  --table-head-bg: rgba(255,255,255,.06);
+  --table-row-hover: rgba(255,255,255,.05);
+  --table-border: rgba(255,255,255,.10);
+  --table-cell-px: 16px;
+  --table-cell-py: 12px;
+
+  /* Типографіка */
+  --base-fz: 14px;
+  --font-weight: 400;
+  --font-style: normal;
+  --heading-weight: 600;
+
+  /* Безпека по низу (футер) і відступи карток */
+  --footer-h: 52px;
+  --footer-gap: 16px;
+  --panel-mt: 24px;
+  --panel-mb: 24px;
+  --panel-pb: 50px;
+
+  /* Спеціальна “область налаштувань” (всередині картки Settings) */
+  --settings-mt: 0px;                 /* відступ зверху самої картки Settings */
+  --settings-mb: 68px;                /* відступ знизу самої картки Settings */
+  --settings-maxw: 1600px;            /* межа ширини при ресайзі */
+  --settings-width: 1100px;           /* поточна ширина (перетяжкою/кнопкою) */
+  --settings-minw: 720px;             /* мінімальна ширина при ресайзі */
+  --settings-zoom: 1;                 /* масштаб всередині (0.8–1.5) */
+  --settings-gap: 32px;               /* проміжок між блоками у формі */
+  --settings-pad-x: 16px;             /* внутр. падінг (із правого боку видно) */
+}
+
+/* ---------------------- БАЗОВІ КОЛЬОРИ/ТЕКСТ ------------------------------ */
+#admin-root{ background: var(--page-bg) !important; color: var(--text) !important; }
+#admin-root .muted{ color: var(--muted); }
+#admin-root h1,#admin-root h2,#admin-root h3{ font-weight: var(--heading-weight); }
+#admin-root{ font-size: var(--base-fz); font-weight: var(--font-weight); font-style: var(--font-style); }
+
+/* ---------------------- ХЕДЕР СТОРІНКИ ------------------------------------ */
+#admin-root .admin-header{
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--content-x) !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  overflow: hidden;
+}
+
+/* ---------------------- ЛЕЙАУТ: Сайдбар | Контент ------------------------- */
+#admin-layout{
+  width: 100% !important;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding: 18px var(--content-x) 32px var(--content-x);
+  display: grid !important;
+  grid-template-columns: 1fr;                 /* мобілка */
+  gap: var(--admin-gap) !important;
+  margin-left: var(--offset-left) !important; /* зсув, якщо глобальний сайдбар */
+}
+@media (min-width:1024px){
+  #admin-layout{ grid-template-columns: var(--sidebar-w) minmax(0,1fr); }
+}
+
+/* ---------------------- Сайдбар ------------------------------------------- */
+#admin-root .admin-aside{
+  position: sticky;
+  top: 74px;
+  align-self: start;
+  display: grid;
+  gap: 10px;
+}
+#admin-root .admin-tab-btn{
+  display: block; width: 100%;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-br);
+  text-align: left;
+  cursor: pointer;
+}
+#admin-root .admin-tab-btn:hover{ background: rgba(255,255,255,.08); }
+#admin-root .admin-tab-btn.is-active{
+  background: rgba(255,255,255,.14) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+}
+
+/* ---------------------- Контентна колонка --------------------------------- */
+#admin-root .admin-main{ min-width: 0; display: grid; gap: 24px; }
+
+/* ---------------------- Картки -------------------------------------------- */
+#admin-root .card{
+  background: var(--card-bg) !important;
+  border: var(--card-border-w) solid var(--card-br) !important;
+  border-radius: var(--card-radius) !important;
+  box-shadow: var(--card-shadow) !important;
+  transition: box-shadow .15s ease;
+}
+#admin-root .card:hover{ box-shadow: 0 14px 42px rgba(0,0,0,.3); }
+
+#admin-root .card-head{
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 16px 16px;
+  border-bottom: 1px solid var(--card-br);
+}
+#admin-root .card-title{ font-size: 1rem; font-weight: 600; }
+#admin-root .card-body{ padding: 16px; }
+
+/* Центрування карток-панелей, безпечне дно над футером */
+#admin-root .admin-panel > .card{
+  max-width: var(--content-max);
+  margin: var(--panel-mt) auto calc(var(--panel-mb) + var(--footer-h) + var(--footer-gap));
+  padding-bottom: var(--panel-pb);
+}
+
+/* Для панелі Settings — ще й обмеження по висоті з автоскролом */
+#admin-root .admin-panel[data-admin-panel="settings"] > .card{
+  max-width: none;                 /* ширину керуємо зсередини через settings-* */
+  margin-top: var(--settings-mt) !important;
+  margin-bottom: calc(var(--settings-mb) + var(--footer-h) + var(--footer-gap)) !important;
+  max-height: calc(100vh - 96px - var(--footer-h) - var(--footer-gap));
+  overflow: auto;                  /* вертикальний скрол якщо не влазить */
+}
+
+/* ---------------------- Контроли, кнопки, інпути -------------------------- */
+#admin-root .btn{
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--btn-radius);
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1px solid transparent;
+  box-shadow: var(--btn-shadow);
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 36px;
+}
+#admin-root .btn:hover{ filter: brightness(0.98); }
+#admin-root .btn:disabled{ opacity:.55; cursor:not-allowed; }
+#admin-root .btn.btn-primary{
+  background: var(--accent);
+  color: #111318;
+}
+#admin-root .btn.btn-ghost{
+  background: var(--btn-bg-ghost);
+  color: var(--btn-text-ghost);
+  border-color: rgba(255,255,255,.12);
+}
+#admin-root .btn.sm{ padding: 8px 10px; min-height: 30px; font-size: 12px; }
+
+#admin-root .input{
+  display: inline-flex; align-items: center;
+  width: 100%; min-width: 0;        /* щоб не “вилазили” з колонок */
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--card-br);
+  color: var(--text);
+  outline: none;
+}
+#admin-root .input:focus{ border-color: rgba(255,255,255,.25); }
+#admin-root .input.sm{ padding: 8px 10px; font-size: 12px; }
+#admin-root .input.color{ padding: 0; height: 40px; }
+
+#admin-root .err{ color:#ff7b7b; font-size:12px; }
+
+/* ---------------------- Таблиці ------------------------------------------- */
+#admin-root .scroll-x{ overflow-x: auto; }
+#admin-root .tbl{ width: var(--table-w); border-collapse: separate; border-spacing: 0; }
+#admin-root .tbl thead th{
+  background: var(--table-head-bg);
+  color: var(--text);
+  font-weight: var(--heading-weight);
+  text-align: left;
+  padding: var(--table-cell-py) var(--table-cell-px);
+}
+#admin-root .tbl th, #admin-root .tbl td{
+  border-bottom: 1px solid var(--table-border);
+  padding: var(--table-cell-py) var(--table-cell-px);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+#admin-root .tbl tbody tr:hover{ background: var(--table-row-hover); }
+
+/* ---------------------- Утиліти-компонування ------------------------------ */
+#admin-root .row{ display:flex; align-items:center; }
+#admin-root .row.gap{ gap: 12px; }
+#admin-root .row.nowrap{ flex-wrap: nowrap; }
+#admin-root .stack > * + *{ margin-top: 12px; }
+#admin-root .center{ text-align: center; }
+#admin-root .grow{ flex: 1 1 auto; }
+#admin-root .mb-2{ margin-bottom:.5rem; }
+#admin-root .mt-3{ margin-top:.75rem; }
+#admin-root .mt-6{ margin-top:1.5rem; }
+#admin-root .ml-3{ margin-left:.75rem; }
+#admin-root .sep{ border:0; height:1px; background: var(--card-br); margin: 16px 0; }
+
+/* Грід-утиліти (для форм) */
+#admin-root .grid-12{ display:grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: var(--settings-gap); }
+#admin-root .grid-3{ display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--settings-gap); }
+#admin-root .grid-2{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--settings-gap); }
+
+#admin-root .col-4{ grid-column: span 4 / span 4; min-width: 0; }
+#admin-root .col-8{ grid-column: span 8 / span 8; min-width: 0; }
+
+@media (max-width: 1023.98px){
+  #admin-root .grid-12{ grid-template-columns: 1fr; }
+  #admin-root .grid-3{ grid-template-columns: 1fr; }
+  #admin-root .grid-2{ grid-template-columns: 1fr; }
+  #admin-root .col-4, #admin-root .col-8{ grid-column: 1 / -1; }
+}
+
+/* ---------------------- Елементи списків у "Видимість блоків" ------------- */
+#admin-root .item{
+  display:flex; align-items:center; justify-content:space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--card-br);
+  border-radius: 14px;
+  background: rgba(255,255,255,.05);
+}
+#admin-root .item-col .item-title{ font-weight: 600; }
+
+/* ---------------------- Приховування (для табів) -------------------------- */
+.hidden{ display:none !important; }
+
+/* ====================== БЕЗПЕЧНЕ ДНО + ЗАПАС ПІД ФУТЕР ==================== */
+#admin-root .admin-panel > .card{
+  /* вже є margin-bottom з урахуванням футера вище */
+  padding-bottom: var(--panel-pb);
+}
+
+/* ====================== ОБЛАСТЬ “SETTINGS” (центр+ресайз+зум) ============= */
+/* В’юшка, що дає вертикальний та горизонтальний скрол при потребі */
+#admin-root .settings-viewport{
+  position: relative;
+  /* вертикальний скрол уже є на .card, але тут додаємо і горизонтальний запас */
+  overflow: auto;
+  padding-right: 12px; /* щоб скролбар не залипав на контент */
+}
+
+/* Контейнер, що має фікс./кастомну ширину з обмеженнями і горизонтальний скрол */
+#admin-root .settings-resize{
+  position: relative;
+  width: var(--settings-width);
+  max-width: var(--settings-maxw);
+  min-width: var(--settings-minw);
+  /* якщо контент ширший — даємо горизонтальний скрол саме тут */
+  overflow: auto;
+  margin-inline: auto;                      /* по центру */
+  background: transparent;
+  border-radius: 14px;
+}
+
+/* Ручка перетягування праворуч */
+#admin-root .settings-resize-handle{
+  position: absolute;
+  top: 0; right: -4px; bottom: 0;
+  width: 8px;
+  cursor: ew-resize;
+  opacity: 0.25;
+  background: linear-gradient(90deg, transparent 0, rgba(255,255,255,.15) 50%, transparent 100%);
+  border-radius: 8px;
+  transition: opacity .15s ease;
+  z-index: 3;
+}
+#admin-root .settings-resize-handle:hover{ opacity: .6; }
+
+/* Внутрішня “сцена”, яку можна масштабувати */
+#admin-root .settings-zoom{
+  transform: scale(var(--settings-zoom));
+  transform-origin: top left;
+  /* щоб при зумі контент не прилипав до краю — даємо внутрішній падінг */
+  padding: 0 var(--settings-pad-x);
+  /* важливо: щоб не обрізати тіні/фокуси */
+  overflow: visible;
+}
+
+/* Щоб підписи/лейбли не ламалися по літерах */
+#admin-root .admin-panel[data-admin-panel="settings"] .muted,
+#admin-root .admin-panel[data-admin-panel="settings"] label{
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
+
+/* Дрібні елементи в заголовку картки */
+#admin-root .card-head .row.nowrap .btn{ white-space: nowrap; }
+
+/* ====================== ДОДАТКОВІ ФІКСИ КЛІКАБЕЛЬНОСТІ ==================== */
+/* Уникаємо перекриття кнопок ручкою перетягування по центрі */
+#admin-root .settings-resize .grid-12,
+#admin-root .settings-resize .grid-2,
+#admin-root .settings-resize .grid-3{
+  position: relative;
+  z-index: 2;
+}
+
+/* Підсвітка активної кнопки табів (на випадок змін теми) */
+.admin-tab-btn.is-active{
+  background: rgba(255,255,255,.14);
+}
+
+/* ====================== СПЕЦ-РЕЖИМ: відокремлена панель =================== */
+.admin-detached .sticky, 
+.admin-detached .admin-aside{
+  display: none !important;
+}
+.admin-detached #admin-layout{
+  max-width: none; margin: 0; padding-top: 0;
+  grid-template-columns: minmax(0,1fr) !important;
+}
+
+/* ========================================================================== */

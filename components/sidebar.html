@@ -1,0 +1,106 @@
+<!-- Sidebar Menu -->
+<!-- Sidebar займає всю висоту екрана -->
+<!-- overflow-y-auto додає прокрутку, якщо пунктів більше, ніж висота -->
+<!-- bg-[#1a1a1a] — темно-сірий фон (90% чорного) -->
+<!-- text-white — білий текст для контрасту -->
+<div
+  class="w-64 bg-[#1a1a1a] text-white overflow-y-auto sidebar"
+  style="height: calc(100dvh - var(--footer-h));">
+  <!-- Заголовок логотипу / назви -->
+  <div class="p-4 text-2xl font-bold border-b">ShiftTime</div>
+
+
+
+  <!-- Меню навігації -->
+  <!-- space-y-1 — менші відступи між пунктами -->
+  <!-- text-xs — зменшений шрифт -->
+  <nav class="flex-1 p-2 space-y-1 text-sm leading-tight text-white">
+  <!--<nav class="flex-1 p-2 space-y-1 text-xs leading-tight text-white"></nav>-->
+
+  <a href="#" data-page="dashboard" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/home.svg" class="w-6 h-6">Головна</span>
+</a>
+
+<a href="#" data-page="messages" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/message.svg" class="w-6 h-6">Повідомлення</span>
+</a>
+
+<a href="#" data-page="nova-poshta" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3">
+    <img src="icons/orders.svg" class="w-6 h-6" alt="НП" />
+    Замовлення
+  </span>
+</a>
+
+<a href="#" data-page="all-orders" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/notebook-pen.svg" class="w-6 h-6">Дані Замовленнь</span>
+</a>
+
+<a href="#" data-page="products" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/bag.svg" class="w-6 h-6">Товари</span>
+</a>
+
+<a href="#" data-page="clients" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/users-three.svg" class="w-6 h-6">Клієнти</span>
+</a>
+
+<a href="#" data-page="admin" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/user-circle-gear.svg" class="w-6 h-6">Адміністратор</span>
+</a>
+
+<a href="#" data-page="managers" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/user-circle.svg" class="w-6 h-6">Менеджери</span>
+</a>
+
+<a href="#" data-page="users" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/users.svg" class="w-6 h-6">Користувачі</span>
+</a>
+
+<a href="#" data-page="settings" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/settings.svg" class="w-6 h-6">Налаштування</span>
+</a>
+
+<a href="#" data-page="config-kv" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/cog.svg" class="w-6 h-6">Конфігурація</span>
+</a>
+
+<a href="#" data-page="settings-template" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3">
+    <img src="icons/layout-template.svg" class="w-6 h-6">Шаблони</span>
+</a>
+
+<a href="#" data-page="telephony" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/phone-call.svg" class="w-6 h-6">Телефонія</span>
+</a>
+
+<a href="#" data-page="finance-widget" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/money-wavy.svg" class="w-6 h-6">Фінанси</span>
+</a>
+
+<a href="#" data-page="ads" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/reklama.svg" class="w-6 h-6">Реклама</span>
+</a>
+
+<a href="#" data-page="builder" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/lego.svg" class="w-6 h-6">Конструктор</span>
+</a>
+
+<a href="#" data-page="analytics" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/chart.svg" class="w-6 h-6">Аналітика</span>
+</a>
+
+<a href="#" data-page="competitors" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/competitors_OLX.svg" class="w-6 h-6">Конкуренти OLX</span>
+</a>
+
+<a href="#" data-page="chatbot" class="menu-item flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 hover:text-black">
+  <span class="flex items-center gap-3"><img src="icons/open-ai-logo.svg" class="w-6 h-6">ЧАТ БОТ</span>
+</a>
+
+   
+
+  </nav>
+</div>
+
+    <!-- Основна частина -->
+    <main class="flex-1 p-6">

@@ -1,0 +1,151 @@
+<!-- pages/config-kv.html -->
+<div id="config-kv-page" class="p-4 space-y-4">
+  <!-- ===== Шапка сторінки ===== -->
+  <header class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div class="flex items-center gap-3">
+      <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-500 flex items-center justify-center shadow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.14,12.94a7.07,7.07,0,0,0,.05-.94,7.07,7.07,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.95l-.38-2.65A.5.5,0,0,0,13,.5H11a.5.5,0,0,0-.5.42L10.12,3.57a7.28,7.28,0,0,0-1.63.95l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L5.63,11.06a7.07,7.07,0,0,0,0,1.88L3.52,14.59a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.95l.38,2.65A.5.5,0,0,0,11,23.5h2a.5.5,0,0,0,.5-.42l.38-2.65a7.28,7.28,0,0,0,1.63-.95l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold leading-tight">Конфігурація (KEY / VALUE)</h2>
+        <p class="text-sm opacity-70">Єдина точка правди для всіх посилань та параметрів CRM</p>
+      </div>
+    </div>
+
+<div id="config-toolbar" class="d-flex gap-2 align-items-center">
+  <button id="btnRefreshConfig" class="btn btn-sm btn-outline-secondary">
+    Оновити CONFIG зараз
+  </button>
+</div>
+
+
+
+
+    <!-- Кнопки дій + вибір середовища (для підсвітки колонки) -->
+    <div class="flex flex-wrap gap-2 items-center">
+      <label class="text-sm opacity-75">Середовище:</label>
+      <select id="kv-env" class="px-3 py-2 rounded-xl border border-white/15 bg-white/5 outline-none">
+        <option value="VALUE">VALUE (prod / default)</option>
+        <option value="VALUE_1">VALUE_1 (dev / staging-1)</option>
+        <option value="VALUE_2">VALUE_2 (staging-2)</option>
+      </select>
+
+      <button id="kv-refresh" class="px-3 py-2 rounded-xl border border-white/15 hover:bg-white/10 transition">
+        Оновити
+      </button>
+      <button id="kv-save-all" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow transition">
+        Зберегти всі змінені
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Панель пошуку + додавання нового ключа ===== -->
+  <section class="grid gap-3 lg:grid-cols-3">
+    <!-- Пошук -->
+    <div class="lg:col-span-1">
+      <label class="block text-sm mb-1 opacity-80">Пошук за ключем або значенням</label>
+      <input id="kv-search" class="w-full px-3 py-2 rounded-xl border border-white/15 bg-white/5 outline-none focus:ring-2 focus:ring-sky-500" placeholder="напр. BASE, URL, TOKEN…">
+    </div>
+
+    <!-- Додати новий KEY + всі три VALUE -->
+    <form id="kv-add-form" class="lg:col-span-2 grid sm:grid-cols-7 gap-3 items-end">
+      <div class="sm:col-span-2">
+        <label class="block text-sm mb-1 opacity-80">Новий KEY</label>
+        <input id="kv-new-key" class="w-full px-3 py-2 rounded-xl border border-white/15 bg-white/5 outline-none focus:ring-2 focus:ring-sky-500 font-mono" placeholder="MY_KEY">
+      </div>
+      <div class="sm:col-span-5 grid sm:grid-cols-3 gap-3">
+        <div>
+          <label class="block text-sm mb-1 opacity-80">VALUE</label>
+          <textarea id="kv-new-value" class="kv-textarea w-full px-3 py-2 rounded-xl border border-white/15 bg-white/5 outline-none focus:ring-2 focus:ring-sky-500 whitespace-pre-wrap" rows="1" placeholder="значення / URL…"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm mb-1 opacity-80">VALUE_1</label>
+          <textarea id="kv-new-value1" class="kv-textarea w-full px-3 py-2 rounded-xl border border-white/15 bg-white/5 outline-none focus:ring-2 focus:ring-sky-500 whitespace-pre-wrap" rows="1" placeholder="optional…"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm mb-1 opacity-80">VALUE_2</label>
+          <textarea id="kv-new-value2" class="kv-textarea w-full px-3 py-2 rounded-xl border border-white/15 bg-white/5 outline-none focus:ring-2 focus:ring-sky-500 whitespace-pre-wrap" rows="1" placeholder="optional…"></textarea>
+        </div>
+      </div>
+      <div class="sm:col-span-7">
+        <button class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow transition">Додати</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ===== Таблиця ключів ===== -->
+  <section class="rounded-2xl border border-white/10 bg-white/5 backdrop-blur">
+    <div class="p-3 border-b border-white/10 text-sm opacity-75">
+      Довгі значення не обрізаються — переносимо рядки та показуємо всі символи. Можна редагувати будь-яку колонку.
+    </div>
+
+    <div id="kv-table" class="overflow-auto">
+      <!-- JS підставляє <table> всередину цього контейнера -->
+    </div>
+  </section>
+</div>
+
+<!-- Локальні стилі для цієї сторінки -->
+<style>
+  /* Заборона горизонтального скролу у textarea та м'які переноси */
+  #config-kv-page textarea.kv-textarea {
+    overflow: hidden;            /* без горизонтального скролу */
+    resize: none;                /* ручки ресайзу не потрібні – автогроу у JS */
+    line-height: 1.35rem;
+    font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", Consolas, "Liberation Mono", monospace;
+    word-break: break-word;      /* переносимо довгі токени */
+    white-space: pre-wrap;       /* показуємо все, включно з переносами */
+  }
+  /* Табличний вигляд — охайні межі, м'які кути */
+  #config-kv-page table { border-collapse: separate; border-spacing: 0; }
+  #config-kv-page thead th {
+    position: sticky; top: 0;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(6px);
+  }
+  #config-kv-page td, #config-kv-page th { border-bottom: 1px solid rgba(255,255,255,0.08); }
+  /* Підсвічення активної колонки згідно вибраного середовища */
+  #config-kv-page td.env-active { background: rgba(56,189,248,0.08); }
+
+
+/* резервуємо місце під футер, щоб останній рядок не перекрився */
+#config-kv-page { 
+  --kv-offset: 420px;          /* ← скільки «відняти» від 100vh; підкручуй цифру тут */
+  padding-bottom: 64px;        /* висота футера/запас, щоб рядок не ховався під ним */
+}
+
+/* робимо саме #kv-table вікном прокрутки фіксованої висоти */
+#config-kv-page #kv-table {
+  height: calc(100vh - var(--kv-offset)) !important;  /* головне — height, не max-height */
+  overflow: auto;
+  position: relative;           /* для коректного sticky у Safari/Chrome */
+  padding-bottom: 8px;          /* дрібний внутрішній запас */
+}
+
+/* sticky заголовок таблиці, якщо треба */
+#config-kv-page thead th {
+  position: sticky; top: 0;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(6px);
+  z-index: 1;
+}
+</style>
+
+<script type="module">
+  import { initConfig } from '/frontend/widgets/config-kv/config-kv.js';
+
+  async function refreshConfig() {
+    try {
+      await fetch('/api/config/kv?force=1', { method: 'POST' }); // скинути кеш функції
+      await initConfig();                                        // підтягнути свіжі ключі у фронт
+      window.toast?.('CONFIG оновлено');
+    } catch (e) {
+      console.error('CONFIG refresh failed', e);
+      alert('Не вдалося оновити CONFIG');
+    }
+  }
+
+  // викликніть refreshConfig() по кліку на кнопку «Оновити»
+</script>

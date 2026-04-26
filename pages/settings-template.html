@@ -1,0 +1,241 @@
+<!-- pages/settings-template.html -->
+<section id="template-settings" class="p-4 space-y-4">
+  <h2 class="text-2xl font-bold">Налаштування шаблонів</h2>
+
+  <!-- Toolbar -->
+  <div class="flex flex-wrap items-center gap-2">
+    <button id="tpl-new" class="px-3 py-1 rounded bg-blue-600 text-white">+ Новий шаблон</button>
+    <button id="tpl-save" class="px-3 py-1 rounded bg-emerald-600 text-white">💾 Зберегти</button>
+    <button id="tpl-delete" class="px-3 py-1 rounded bg-rose-600 text-white">🗑️ Видалити</button>
+
+    <div class="ml-4 flex items-center gap-2">
+      <label class="text-sm">Поле:</label>
+      <select id="tpl-insert-key" class="border rounded px-2 py-1 text-sm"></select>
+      <button id="tpl-insert-key-btn" class="px-2 py-1 rounded border">Вставити {{ключ}}</button>
+    </div>
+
+    <div id="tpl-toolbar">
+    
+      <!--   <select id="tpl-insert-key"></select>поруч із селектом "Вставити {{ключ}}" -->
+      <span id="logic-tools-slot"></span>
+      
+    </div>
+
+
+
+
+    <button id="tpl-emoji" class="px-2 py-1 rounded border">🙂 Емодзі</button>
+    <button id="tpl-add-action" class="px-2 py-1 rounded border">➕ Додати дію (кнопку)</button>
+    <button id="tpl-json-open" class="px-2 py-1 rounded border">🧩 Тестові дані (JSON)</button>
+
+    <!-- Попап емодзі -->
+    <div id="tpl-emoji-pop" class="hidden absolute z-10 bg-white border rounded shadow p-2 text-xl">
+      <button class="emoji">✨</button><button class="emoji">✅</button><button class="emoji">📦</button>
+      <button class="emoji">🚚</button><button class="emoji">💬</button><button class="emoji">📞</button>
+      <button class="emoji">🏷️</button><button class="emoji">🧾</button>
+    </div>
+  </div>
+
+  <!-- СТИЛІ ТІЛЬКИ ДЛЯ ЦІЄЇ СТОРІНКИ -->
+  <style>
+    /* ===== OUTER 3-SPLIT (left | center | right) ===== */
+    #tpl-3split { display:flex; align-items:stretch; gap:12px; position:relative; }
+    #tpl-left, #tpl-center, #tpl-right { min-width:220px; }
+    .tpl-resizer {
+      width:10px; min-width:10px; cursor: col-resize; border-radius:9999px;
+      background: linear-gradient(180deg,#e2e8f0,#cbd5e1); position:relative; opacity:.6;
+    }
+    .tpl-resizer:hover { opacity:1; }
+    .tpl-resizer:hover::after {
+      content:"<-- -->"; position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%); font-size:12px; color:#334155; background:#fff;
+      padding:2px 6px; border:1px solid #cbd5e1; border-radius:9999px; box-shadow:0 1px 2px rgba(0,0,0,.06);
+    }
+    .tpl-ns { user-select:none; }
+
+    /* Chips "Показати …" */
+    .show-chip {
+      position:absolute; top:48px; z-index:20; background:#fff; border:1px solid #cbd5e1;
+      border-radius:9999px; padding:4px 10px; font-size:12px; box-shadow:0 1px 2px rgba(0,0,0,.06);
+    }
+    #show-left{ left:6px; } #show-center{ left:50%; transform:translateX(-50%); } #show-right{ right:6px; }
+
+    /* ===== CENTER LAYOUT (header + two columns) ===== */
+    /* Header: left edge | centered title | right edge */
+    #tpl-center .tplc-topbar{
+      display:grid; grid-template-columns:1fr minmax(360px, 720px) 1fr;
+      align-items:center; gap:8px; margin-bottom:12px;
+    }
+    #tpl-center .tplc-leftedge{  justify-self:start; }
+    #tpl-center .tplc-center{    justify-self:center; display:flex; gap:12px; align-items:center; }
+    #tpl-center .tplc-rightedge{ justify-self:end;   display:flex; gap:8px; }
+
+    /* Outer wrapper to center the two-column grid */
+    #tpl-center .tplc-outer{ display:flex; justify-content:center; width:100%; }
+
+    /* Two equal columns, grid stays centered */
+    #tpl-center .tplc-grid{
+      display:grid; grid-template-columns:1fr 1fr; gap:24px;
+      width:min(1200px, 100%); margin:0 auto;
+      justify-items:center; align-items:start;
+    }
+
+    /* Each half centers its inner container */
+    #tpl-center .tplc-col{ display:flex; justify-content:center; width:100%; }
+
+    /* Inner container: 85% width of each half */
+    #tpl-center .tplc-inner{ width:85%; max-width:540px; margin:0 auto; }
+
+    /* Labels centered */
+    #tpl-center .tplc-inner label{ display:block; text-align:center; margin-bottom:6px; }
+
+    /* Editor / Preview fields */
+    #tpl-center #tpl-editor, #tpl-center #tpl-preview{
+      width:100%; min-height:42vh; resize:vertical; box-sizing:border-box;
+    }
+  </style>
+
+ <div id="tpl-3split" class="mt-3" style="position:relative;">
+  <!-- LEFT: Мої шаблони -->
+  <aside id="tpl-left" class="border rounded p-3 bg-white" style="width:24%;">
+    <div class="flex items-center justify-between">
+      <h3 class="font-semibold">Мої шаблони</h3>
+      <button id="hide-left" type="button" class="text-xs px-2 py-1 border rounded">Приховати</button>
+    </div>
+
+    <div class="mt-2">
+      <input id="tpl-search" placeholder="Пошук..." class="border rounded px-2 py-1 text-sm w-full" />
+    </div>
+    <ul id="tpl-list" class="mt-3 space-y-1 max-h-[60vh] overflow-auto"></ul>
+  </aside>
+
+  <!-- RESIZER Left <-> Center -->
+  <div id="tpl-resizer-lc"
+       class="tpl-resizer"
+       role="separator"
+       aria-orientation="vertical"
+       aria-label="Змінити ширину лівої колонки"
+       title="Потягни, щоб змінити ширину"
+       tabindex="0"></div>
+
+  <!-- CENTER (єдиний!) -->
+  <main id="tpl-center" class="border rounded bg-white p-3" style="width:52%;">
+    <div class="tplc-vstack">
+      <!-- Шапка центру -->
+      <div class="tplc-topbar">
+        
+
+        <div class="tplc-center">
+          <h3 class="m-0 text-base font-semibold">Редактор шаблону</h3>
+          <input id="tpl-name" class="border rounded px-2 py-1 text-sm" placeholder="Назва шаблону" style="width:240px;" />
+        </div>
+
+        <div class="tplc-rightedge">
+         
+          <button id="hide-center" type="button" class="px-2 py-1 text-xs border rounded">Приховати</button>
+        </div>
+      </div>
+
+      <!-- Дві половини: Вміст | Попередній перегляд -->
+      <div class="tplc-outer">
+        <div class="tplc-grid">
+          <!-- Ліва половина: редактор -->
+          <section class="tplc-col tplc-left">
+            <div class="tplc-inner">
+              <label class="text-sm font-medium block mb-1">Вміст шаблону</label>
+              <textarea id="tpl-editor"
+                        class="border rounded p-3 font-mono text-sm"
+                        placeholder="Текст шаблону з {{keys}}..."></textarea>
+           
+            </div>
+          </section>
+
+          <!-- Права половина: попередній перегляд -->
+          <section class="tplc-col tplc-right">
+            <div class="tplc-inner">
+              <label class="text-sm font-medium block mb-1">Попередній перегляд</label>
+              <div id="tpl-preview"
+                   class="border rounded p-3 whitespace-pre-wrap text-sm overflow-auto bg-slate-50"></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- RESIZER Center <-> Right -->
+  <div id="tpl-resizer-cr"
+       class="tpl-resizer"
+       role="separator"
+       aria-orientation="vertical"
+       aria-label="Змінити ширину правої колонки"
+       title="Потягни, щоб змінити ширину"
+       tabindex="0"></div>
+
+  <!-- RIGHT: Дії -->
+  <aside id="tpl-right" class="border rounded p-3 bg-white" style="width:24%;">
+    <div class="flex items-center justify-between">
+      <h3 class="font-semibold">Дії шаблону</h3>
+      <button id="hide-right" type="button" class="text-xs px-2 py-1 border rounded">Приховати</button>
+    </div>
+
+    <div id="tpl-actions" class="mt-2 flex flex-col gap-2"></div>
+    <hr class="my-3" />
+
+    <div id="tpl-action-settings" class="space-y-2">
+      <h4 class="font-semibold">Налаштування кнопки</h4>
+
+      <label class="text-sm">Тип</label>
+      <select id="tpl-action-type" class="border rounded px-2 py-1 w-full">
+        <option value="telegram">Надіслати в Telegram</option>
+      </select>
+
+      <label class="text-sm">Текст кнопки</label>
+      <input id="tpl-action-label" class="border rounded px-2 py-1 w-full" placeholder="Напр., Надіслати в Telegram" />
+
+      <button id="tpl-action-save" type="button" class="px-3 py-1 rounded bg-emerald-600 text-white text-sm">
+        Зберегти налаштування
+      </button>
+    </div>
+  </aside>
+
+  <!-- Chips (показ прихованих блоків) -->
+  <button id="show-left"   type="button" class="show-chip hidden" style="left:6px;">Показати «Мої шаблони»</button>
+  <button id="show-center" type="button" class="show-chip hidden" style="left:50%;transform:translateX(-50%);">
+    Показати «Редактор»
+  </button>
+  <button id="show-right"  type="button" class="show-chip hidden" style="right:6px;">Показати «Дії»</button>
+</div>
+
+
+  <!-- JSON Modal -->
+<div id="tpl-json-modal" class="fixed inset-0 hidden">
+  <div class="absolute inset-0 bg-black/40"></div>
+
+  <!-- було: w-[min(900px,92vw)] max-h-[85vh] -->
+  <div id="tpl-json-dialog"
+       class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+              bg-white w-[min(1200px,96vw)] max-h-[92vh]
+              rounded-lg shadow p-4 flex flex-col gap-3">
+    <div class="flex items-center justify-between">
+      <h3 class="text-lg font-semibold">Тестові дані (JSON)</h3>
+      <div class="flex gap-2">
+        <!-- необов’язково: кнопка повноекранного режиму -->
+        <button id="tpl-json-max" class="px-2 py-1 border rounded">⛶</button>
+        <button id="tpl-json-close" class="px-2 py-1 border rounded">✕</button>
+      </div>
+    </div>
+
+    <!-- додали min-h, лишили flex-1 щоб тягнулося разом із вікном -->
+    <textarea id="tpl-test-json"
+      class="w-full flex-1 min-h-[60vh] border rounded p-2 font-mono text-sm"></textarea>
+
+    <div class="flex items-center justify-end gap-2">
+      <button id="tpl-json-select" class="px-2 py-1 border rounded">Виділити все</button>
+      <button id="tpl-json-copy"   class="px-2 py-1 border rounded">Копіювати</button>
+      <button id="tpl-json-close2" class="px-2 py-1 border rounded bg-slate-100">Закрити</button>
+    </div>
+  </div>
+</div>
+
+</section>

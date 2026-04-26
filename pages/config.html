@@ -1,0 +1,144 @@
+<!--
+  frontend/pages/config.html
+  Сторінка керування конфігом напряму через GAS (варіант без /api-проксі).
+  Працює в парі з /js/config-store.js:
+    - loadConfig()    -> GET  { ... } з GAS (?action=config)
+    - updateConfig()  -> POST { pin, updates } у GAS (?action=config)
+
+  Примітка про шлях імпорту:
+    Якщо у проді /js доступний від кореня домену — залишай "/js/config-store.js".
+    Якщо файл 404, заміни рядок імпорту на "js/config-store.js".
+-->
+
+<section class="p-4 space-y-4">
+  <h2 class="text-2xl font-semibold">Конфігурація проєкта</h2>
+
+  <div id="cfg-status" class="text-sm opacity-75"></div> <!-- статус завантаження/збереження -->
+
+  <form id="cfg-form" class="grid gap-3 max-w-3xl" autocomplete="off">
+    <!-- Ключ: URL твого GAS WebApp -->
+    <label class="grid gap-1">
+      <span class="text-sm">SHEETS_WEBAPP_URL</span>
+      <input
+        name="SHEETS_WEBAPP_URL"
+        class="border rounded px-2 py-1"
+        placeholder="https://script.google.com/macros/s/.../exec"
+      >
+    </label>
+
+    <!-- Інші ключі: залишаємо, якщо колись знадобляться -->
+    <label class="grid gap-1">
+      <span class="text-sm">RENDER_BASE</span>
+      <input
+        name="RENDER_BASE"
+        class="border rounded px-2 py-1"
+        placeholder="https://shifttime-crm.onrender.com"
+      >
+    </label>
+
+    <label class="grid gap-1">
+      <span class="text-sm">NETLIFY_BASE</span>
+      <input
+        name="NETLIFY_BASE"
+        class="border rounded px-2 py-1"
+        placeholder="https://crm.shifttime.com.ua"
+      >
+    </label>
+
+    <label class="grid gap-1">
+      <span class="text-sm">TELEGRAM_FN_PATH</span>
+      <input
+        name="TELEGRAM_FN_PATH"
+        class="border rounded px-2 py-1"
+        placeholder="/api/telegram/send"
+      >
+    </label>
+
+    <details class="mt-2">
+      <summary class="cursor-pointer select-none text-sm opacity-80">Безпека</summary>
+      <label class="grid gap-1 mt-2">
+        <span class="text-sm">ADMIN_PIN (зберігається у таблиці)</span>
+        <input name="ADMIN_PIN" class="border rounded px-2 py-1" placeholder="••••••">
+      </label>
+    </details>
+
+    <div class="flex items-center gap-2 mt-3">
+      <!-- PIN для збереження (перевіряється у GAS) -->
+      <input
+        type="password"
+        id="cfg-pin"
+        class="border rounded px-2 py-1"
+        placeholder="PIN для збереження"
+        autocomplete="current-password"
+      >
+      <button type="submit" class="px-4 py-2 rounded bg-blue-600 text-white">
+        Зберегти
+      </button>
+    </div>
+  </form>
+</section>
+
+<script type="module">
+  // Якщо у проді /js доступний від кореня — лишай як є.
+  // Якщо 404, зміни на: import { loadConfig, updateConfig } from "js/config-store.js";
+  import { loadConfig, updateConfig } from "/js/config-store.js";
+
+  const form = document.getElementById('cfg-form');
+  const statusEl = document.getElementById('cfg-status');
+  const pinEl = document.getElementById('cfg-pin');
+
+  // Допоміжне: оновити статус (із невеликим «скіданням» через кілька секунд)
+  let statusTimer;
+  function setStatus(text, ok = null) {
+    clearTimeout(statusTimer);
+    statusEl.textContent = text || '';
+    statusEl.classList.remove('text-red-600', 'text-emerald-600');
+    if (ok === true)  statusEl.classList.add('text-emerald-600');
+    if (ok === false) statusEl.classList.add('text-red-600');
+    if (text) {
+      statusTimer = setTimeout(() => (statusEl.textContent = ''), 4000);
+    }
+  }
+
+  // 1) Підтягнути поточні значення з GAS (або локального кешу)
+  try {
+    setStatus('Завантажую конфіг…');
+    const cfg = await loadConfig(); // бере з GAS → ?action=config (або повертає локальний кеш, якщо URL порожній)
+    // Проставляємо поля, які присутні у формі
+    for (const [k, v] of Object.entries(cfg || {})) {
+      const el = form.elements.namedItem(k);
+      if (el) el.value = v ?? '';
+    }
+    setStatus('✅ Дані підвантажено', true);
+  } catch (err) {
+    setStatus('❌ Не вдалося підвантажити конфіг: ' + (err?.message || err), false);
+  }
+
+  // 2) Збереження
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Збираємо оновлення з форми
+    const updates = {};
+    for (const el of form.elements) {
+      if (!el.name) continue;
+      updates[el.name] = el.value ?? '';
+    }
+
+    // Базова перевірка SHEETS_WEBAPP_URL
+    const gasUrl = (updates.SHEETS_WEBAPP_URL || '').trim();
+    if (!gasUrl) {
+      setStatus('❌ Вкажи SHEETS_WEBAPP_URL (URL твого GAS WebApp)', false);
+      form.elements.namedItem('SHEETS_WEBAPP_URL')?.focus();
+      return;
+    }
+
+    try {
+      setStatus('Зберігаю…');
+      await updateConfig(updates, pinEl.value || ''); // POST у GAS (?action=config)
+      setStatus('✅ Збережено', true);
+    } catch (err) {
+      setStatus('❌ Помилка збереження: ' + (err?.message || err), false);
+    }
+  });
+</script>

@@ -1,0 +1,350 @@
+<!-- frontend/pages/finance-widget.html -->
+<!-- Віджет "Дохід / Розхід / Борг" — сучасний UI: липка шапка, зведення, категорії, форма, аналітика, налаштування.
+     Стилі:   /widgets/finance/finance-widget.css   (окремо)
+     Логіка:  /widgets/finance/finance-widget.js    (автопідтягування категорій із Google Sheet, запис, пресети тощо)
+-->
+
+<section id="finance-widget" class="fw-root" data-theme="default" aria-label="Фінансовий віджет">
+
+  <!-- ====== ЛИПКА ШАПКА (sticky) ====== -->
+  <header class="fw-header fw-header-sticky" role="banner">
+    <div class="fw-brand">
+      <div class="fw-logo" aria-hidden="true"></div>
+      <div class="fw-titles">
+        <h1 class="fw-title">Дохід / Розхід</h1>
+        <p class="fw-subtitle">ShiftTime CRM • Фінанси</p>
+      </div>
+    </div>
+
+    <div class="fw-header-tools">
+      <!-- Швидкі фільтри періоду (JS підв’яжемо пізніше) -->
+      <div class="fw-period">
+        <button class="fw-chip" data-range="today" type="button">Сьогодні</button>
+        <button class="fw-chip" data-range="week" type="button">Тиждень</button>
+        <button class="fw-chip" data-range="month" type="button">Місяць</button>
+        <button class="fw-chip" data-range="quarter" type="button">Квартал</button>
+        <button class="fw-chip" data-range="year" type="button">Рік</button>
+      </div>
+
+      <div class="fw-actions">
+        <button id="fw-analytics-btn" class="fw-btn fw-btn-secondary" type="button" aria-controls="fw-analytics" aria-expanded="false">
+          Аналітика
+        </button>
+        <button id="fw-settings-btn" class="fw-btn fw-btn-ghost" type="button" aria-controls="fw-settings-panel" aria-expanded="false">
+          Налаштування
+        </button>
+      </div>
+    </div>
+
+    <!-- Зведення по періоду (заповнимо у JS) -->
+    <div class="fw-summary" role="group" aria-label="Зведення">
+      <div class="fw-summary-card">
+        <div class="fw-summary-title">Дохід</div>
+        <div id="fw-sum-income" class="fw-summary-value">—</div>
+        <div class="fw-summary-sub">за вибраний період</div>
+      </div>
+      <div class="fw-summary-card">
+        <div class="fw-summary-title">Розхід</div>
+        <div id="fw-sum-expense" class="fw-summary-value">—</div>
+        <div class="fw-summary-sub">за вибраний період</div>
+      </div>
+      <div class="fw-summary-card fw-summary-accent">
+        <div class="fw-summary-title">Баланс</div>
+        <div id="fw-sum-balance" class="fw-summary-value">—</div>
+        <div class="fw-summary-sub">дохід − розхід</div>
+      </div>
+      <div class="fw-summary-card">
+        <div class="fw-summary-title">Борги</div>
+        <div id="fw-sum-debt" class="fw-summary-value">—</div>
+        <div class="fw-summary-sub">активні</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====== ПАНЕЛЬ РЕЖИМІВ ====== -->
+  <nav class="fw-modes" aria-label="Режими введення">
+    <button class="fw-segment is-active" data-mode="income" type="button" aria-pressed="true">Дохід</button>
+    <button class="fw-segment" data-mode="expense" type="button" aria-pressed="false">Розхід</button>
+    <button class="fw-segment" data-mode="debt" type="button" aria-pressed="false">Борг</button>
+  </nav>
+
+  <!-- ====== ОСНОВНИЙ КОНТЕНТ ====== -->
+  <div class="fw-content">
+
+    <!-- Ліва колонка: Категорії -->
+    <aside class="fw-categories" aria-label="Категорії">
+      <div class="fw-cat-header">
+        <h2 class="fw-h2">Категорії</h2>
+        <div class="fw-cat-search">
+          <input id="fw-cat-search" type="search" placeholder="Пошук категорій…" class="fw-input" aria-label="Пошук категорій" />
+        </div>
+      </div>
+
+      <!-- Групи категорій (опційно JS розіб’є на секції). Поки один список. -->
+      <div id="fw-cat-list" class="fw-cat-list" role="list">
+        <!-- JS додасть:
+             <button class="fw-cat" data-key="ОЛХ - 1">ОЛХ - 1</button> ... -->
+      </div>
+
+      <!-- Місце під допоміжні фільтри (наприклад “Тільки активні”, “Топ-часті”) -->
+      <div class="fw-cat-footer">
+        <button class="fw-chip" data-filter="favorites" type="button" title="Часто використовувані">★ Обране</button>
+        <button class="fw-chip" data-filter="recent" type="button" title="Останні">🕒 Останні</button>
+      </div>
+    </aside>
+
+    <!-- Права колонка: Форма введення -->
+    <main class="fw-form-area" aria-live="polite" aria-atomic="true">
+      <!-- Інформаційний callout -->
+      <div class="fw-callout">
+        Оберіть категорію ліворуч, введіть суму і за бажанням коментар / опцію — і натисніть <strong>Відправити</strong>.
+        <br />Номер ПП та Дата підставляються автоматично.
+      </div>
+
+      <!-- Активна категорія -->
+      <div class="fw-active-cat">
+        <span class="fw-active-cat-label">Обрана категорія:</span>
+        <span id="fw-active-cat-name" class="fw-badge">—</span>
+      </div>
+
+      <!-- Форма -->
+      <form id="fw-entry-form" class="fw-form" autocomplete="off">
+        <div class="fw-form-grid">
+
+          <!-- Сума -->
+          <label class="fw-field">
+            <span class="fw-label">Сума</span>
+            <div class="fw-amount-row">
+              <input id="fw-amount" name="amount" type="number" min="0" step="0.01" inputmode="decimal"
+                     class="fw-input fw-amount-input" placeholder="0.00" required />
+              <!-- Гарячі суми для кліку -->
+              <div class="fw-quick-amounts" aria-label="Швидкі суми">
+                <button class="fw-chip" data-add="100"  type="button">+100</button>
+                <button class="fw-chip" data-add="500"  type="button">+500</button>
+                <button class="fw-chip" data-add="1000" type="button">+1 000</button>
+                <button class="fw-chip" data-add="5000" type="button">+5 000</button>
+              </div>
+            </div>
+            <small class="fw-hint">У гривнях. Дробову частину можна вводити через крапку або кому.</small>
+          </label>
+
+          <!-- Технічний селект *(Я / САША) — JS покаже тільки якщо є у таблиці -->
+          <div id="fw-select-wrap" class="fw-field" hidden>
+            <span id="fw-select-label" class="fw-label">Опція</span>
+            <select id="fw-select" class="fw-select"></select>
+            <small class="fw-hint">Опції підтягуються автоматично з таблиці (формат підкатегорії: <code>*(...) </code>).</small>
+          </div>
+
+          <!-- Коментар (*КОМЕНТАР у таблиці) -->
+          <label class="fw-field">
+            <span class="fw-label">Коментар</span>
+            <textarea id="fw-comment" name="comment" rows="3" class="fw-textarea" placeholder="Деталі операції (необов’язково)"></textarea>
+          </label>
+        </div>
+
+        <!-- Системні поля -->
+        <div class="fw-system">
+          <div class="fw-system-item"><span>Номер ПП:</span> <strong id="fw-auto-pp">—</strong></div>
+          <div class="fw-system-item"><span>Дата:</span> <strong id="fw-auto-date">—</strong></div>
+          <div class="fw-system-spacer"></div>
+          <div class="fw-system-status">
+            <span class="fw-dot is-ok" title="Підключення до конфіга"></span> Config
+            <span class="fw-dot is-warn" title="Підключення до GAS"></span> GAS
+            <span class="fw-dot is-warn" title="Підключення до API запису"></span> API
+          </div>
+        </div>
+
+        <!-- Дії форми -->
+        <div class="fw-form-actions">
+          <button id="fw-submit" class="fw-btn fw-btn-primary" type="submit">Відправити</button>
+          <button id="fw-clear" class="fw-btn fw-btn-secondary" type="reset">Очистити</button>
+        </div>
+      </form>
+
+      <!-- Попередній перегляд записів (опційно; заповнимо пізніше) -->
+      <section class="fw-preview" aria-label="Останні записи" hidden>
+        <header class="fw-preview-header">
+          <h3 class="fw-h3">Останні записи</h3>
+          <div class="fw-preview-actions">
+            <button class="fw-btn fw-btn-ghost" type="button" data-action="reload">Оновити</button>
+          </div>
+        </header>
+        <div id="fw-preview-table" class="fw-table-wrap">
+          <!-- JS намалює табличку з останніх N рядків -->
+        </div>
+      </section>
+
+      <!-- Статусні повідомлення -->
+      <div id="fw-toast" class="fw-toast" role="status" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <!-- ====== АНАЛІТИКА ====== -->
+  <section id="fw-analytics" class="fw-analytics" hidden aria-label="Аналітика">
+    <div class="fw-analytics-header">
+      <h2 class="fw-h2">Аналітика</h2>
+      <div class="fw-analytics-toolbar">
+        <button class="fw-chip is-active" data-graph="overview" type="button">Огляд</button>
+        <button class="fw-chip" data-graph="income" type="button">Дохід</button>
+        <button class="fw-chip" data-graph="expense" type="button">Розхід</button>
+        <button class="fw-chip" data-graph="debt" type="button">Борг</button>
+      </div>
+      <p class="fw-muted">Графіки додамо на наступному кроці (Canvas/Recharts). Тут уже є місця для підключення.</p>
+    </div>
+    <div class="fw-analytics-content">
+      <div class="fw-chart-placeholder">Тут будуть графіки доходів/розходів/боргів</div>
+    </div>
+  </section>
+
+  <!-- ====== ПАНЕЛЬ НАЛАШТУВАНЬ ====== -->
+  <aside id="fw-settings-panel" class="fw-settings" hidden aria-label="Налаштування віджета">
+    <header class="fw-settings-header">
+      <h3 class="fw-h3">Налаштування</h3>
+      <button id="fw-settings-close" class="fw-icon-btn" type="button" aria-label="Закрити панель">✕</button>
+    </header>
+
+    <!-- Пресети -->
+    <section class="fw-settings-block">
+      <h4 class="fw-h4">Шаблони (пресети)</h4>
+      <div class="fw-row">
+        <select id="fw-preset-select" class="fw-select" aria-label="Обрати шаблон"></select>
+      </div>
+      <div class="fw-row gap">
+        <button id="fw-preset-save" class="fw-btn fw-btn-secondary" type="button">Зберегти</button>
+        <button id="fw-preset-save-as" class="fw-btn fw-btn-ghost" type="button">Зберегти як…</button>
+        <button id="fw-preset-delete" class="fw-btn fw-btn-ghost" type="button">Видалити</button>
+        <button id="fw-preset-reset" class="fw-btn fw-btn-ghost" type="button">За замовчуванням</button>
+      </div>
+    </section>
+
+    <!-- Тема / кольори -->
+    <section class="fw-settings-block">
+      <h4 class="fw-h4">Тема та кольори</h4>
+      <div class="fw-grid-2">
+        <label class="fw-field">
+          <span class="fw-label">Колір фону</span>
+          <input id="fw-c-bg" type="color" value="#0f172a" class="fw-input-color" />
+        </label>
+        <label class="fw-field">
+          <span class="fw-label">Колір тексту</span>
+          <input id="fw-c-text" type="color" value="#e5e7eb" class="fw-input-color" />
+        </label>
+        <label class="fw-field">
+          <span class="fw-label">Primary</span>
+          <input id="fw-c-primary" type="color" value="#4f46e5" class="fw-input-color" />
+        </label>
+        <label class="fw-field">
+          <span class="fw-label">Secondary</span>
+          <input id="fw-c-secondary" type="color" value="#0ea5e9" class="fw-input-color" />
+        </label>
+        <label class="fw-field">
+          <span class="fw-label">Success</span>
+          <input id="fw-c-success" type="color" value="#10b981" class="fw-input-color" />
+        </label>
+        <label class="fw-field">
+          <span class="fw-label">Danger</span>
+          <input id="fw-c-danger" type="color" value="#ef4444" class="fw-input-color" />
+        </label>
+      </div>
+    </section>
+
+    <!-- Геометрія -->
+    <section class="fw-settings-block">
+      <h4 class="fw-h4">Розміри та геометрія</h4>
+      <div class="fw-grid-3">
+        <label class="fw-field">
+          <span class="fw-label">Радіус кутів</span>
+          <input id="fw-radius" type="range" min="0" max="32" value="16" />
+        </label>
+        <label class="fw-field">
+          <span class="fw-label">Відступи в картках</span>
+          <input id="fw-padding" type="range" min="8" max="32" value="16" />
+        </label>
+        <label class="fw-field">
+          <span class="fw-label">Прозорість</span>
+          <input id="fw-opacity" type="range" min="0.6" max="1" step="0.02" value="0.96" />
+        </label>
+        <label class="fw-field">
+          <span class="fw-label">Тінь (інтенсивність)</span>
+          <input id="fw-shadow" type="range" min="0" max="24" value="12" />
+        </label>
+        <label class="fw-field">
+          <span class="fw-label">Макс. ширина</span>
+          <input id="fw-maxw" type="number" min="960" max="1920" step="10" value="1280" />
+        </label>
+        <label class="fw-field">
+          <span class="fw-label">Висота списку категорій</span>
+          <input id="fw-cats-h" type="number" min="240" max="900" step="10" value="520" />
+        </label>
+      </div>
+    </section>
+
+    <!-- Шапка -->
+    <section class="fw-settings-block">
+      <h4 class="fw-h4">Шапка</h4>
+      <div class="fw-grid-2">
+        <label class="fw-field">
+          <span class="fw-label">Показувати логотип</span>
+          <input id="fw-show-logo" type="checkbox" checked />
+        </label>
+        <label class="fw-field">
+          <span class="fw-label">Текст заголовка</span>
+          <input id="fw-title-text" type="text" class="fw-input" value="Дохід / Розхід" />
+        </label>
+      </div>
+    </section>
+
+    <footer class="fw-settings-footer">
+      <button id="fw-settings-apply" class="fw-btn fw-btn-primary" type="button">Застосувати</button>
+      <button id="fw-settings-cancel" class="fw-btn fw-btn-secondary" type="button">Скасувати</button>
+    </footer>
+  </aside>
+
+</section>
+
+<!-- ====== UNIVERSAL LOADER: file://, http(s), /frontend/, Netlify, + AppConfig з таблиці ====== -->
+<link id="fw-css" rel="stylesheet" href="">
+<script type="module">
+  (async () => {
+    // 0) Визначаємо ROOT для всіх середовищ
+    const isFile      = location.protocol === 'file:';
+    const path        = location.pathname;
+    const hasFrontend = /\/frontend(\/|$)/.test(path);
+    const inPages     = /\/pages(\/|$)/.test(path);
+    const ROOT = isFile || inPages ? '..' : (hasFrontend ? '/frontend' : '');
+
+    // 1) Підключаємо CSS з cache-bust
+    const cssEl = document.getElementById('fw-css');
+    if (cssEl) cssEl.href = ROOT + '/widgets/finance/finance-widget.css?v=' + Date.now();
+
+    // 2) Тягнемо конфіг (SHEETS_WEBAPP_URL / FINANCE_API) з твого централізованого модуля
+    try {
+      const { initConfig, whenConfigReady, getConfigValue } = await import(ROOT + '/widgets/config-kv/config-kv.js?ts=' + Date.now());
+      await initConfig().catch(()=>{});
+      await whenConfigReady().catch(()=>{});
+
+      // Прокинемо глобально — JS віджета це використовує
+      const sheetsUrl = getConfigValue('SHEETS_WEBAPP_URL', window.SHEETS_WEBAPP_URL || '');
+      if (sheetsUrl) window.SHEETS_WEBAPP_URL = String(sheetsUrl).replace(/\/+$/,'');
+      const financeApi = getConfigValue('FINANCE_API', window.FINANCE_API || '');
+      if (financeApi) window.FINANCE_API = financeApi;
+
+      // (необов’язково) Render/Write-бази, якщо згодом треба
+      const renderBase = getConfigValue('RENDER_BASE', null);
+      if (renderBase) window.RENDER_BASE = renderBase;
+      const writeBase = getConfigValue('WRITE_BASE', null);
+      if (writeBase) window.WRITE_BASE = writeBase;
+
+      console.log('[FW] SHEETS_WEBAPP_URL:', window.SHEETS_WEBAPP_URL);
+      console.log('[FW] FINANCE_API:', window.FINANCE_API);
+    } catch (e) {
+      console.warn('[FW] Config init failed', e);
+    }
+
+    // 3) Підключаємо JS-логіку віджета (ES-модуль)
+    const js = document.createElement('script');
+    js.type = 'module';
+    js.src = ROOT + '/widgets/finance/finance-widget.js?v=' + Date.now();
+    document.head.appendChild(js);
+  })();
+</script>
