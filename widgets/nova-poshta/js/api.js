@@ -12,7 +12,7 @@
 
   // ==== ENV detection & guards ==============================================
   // Тестові та прод-хости
-  const TEST_HOSTS = ['localhost', '127.0.0.1', 'shifttime-crm-test.netlify.app'];
+  const TEST_HOSTS = ['localhost', '127.0.0.1', 'shifttime-crm-test.netlify.app', 'lipovbogdanpv.github.io'];
   const PROD_HOSTS = ['crm.shifttime.com.ua'];
 
   const isTestHost = () => TEST_HOSTS.some(h => location.hostname.includes(h));
