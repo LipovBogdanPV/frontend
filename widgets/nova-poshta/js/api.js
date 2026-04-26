@@ -12,7 +12,7 @@
 
   // ==== ENV detection & guards ==============================================
   // Тестові та прод-хости
-  const TEST_HOSTS = ['localhost', '127.0.0.1', 'shifttime-crm-test.netlify.app', 'lipovbogdanpv.github.io'];
+  const TEST_HOSTS = ['localhost', '127.0.0.1', 'shifttime-crm-test.netlify.app', 'quiet-chimera-327a95.netlify.app'];
   const PROD_HOSTS = ['crm.shifttime.com.ua'];
 
   const isTestHost = () => TEST_HOSTS.some(h => location.hostname.includes(h));
@@ -86,13 +86,14 @@
     }
 
     _cfgPromise = (async () => {
+      const gasParam = encodeURIComponent(trimSlash(window.SHEETS_WEBAPP_URL || ''));
       // 1) Netlify proxy
       try {
-        return await fetchCfg(`/api/config/kv?res=kv&mode=list&ts=${nowTs()}`);
+        return await fetchCfg(`/api/config/kv?res=kv&mode=list&gas=${gasParam}&ts=${nowTs()}`);
       } catch {}
       // 2) Alternative proxy
       try {
-        return await fetchCfg(`/api/config/links?mode=list&ts=${nowTs()}`);
+        return await fetchCfg(`/api/config/links?mode=list&gas=${gasParam}&ts=${nowTs()}`);
       } catch {}
       // 3) Direct GAS
       const base = trimSlash(window.SHEETS_WEBAPP_URL || '');
@@ -121,6 +122,10 @@
 
     if (writeBase)                 { assertByEnv(writeBase);   return trimSlash(writeBase); }
     if (writeDirect && sheetsBase) { assertByEnv(sheetsBase);  return trimSlash(sheetsBase); }
+    if (isTestHost() && sheetsBase) {
+      // На тестових доменах спершу пишемо в GAS, щоб не ловити CORS на сторонніх бекендах.
+      return trimSlash(sheetsBase);
+    }
     if (renderBase)                { assertByEnv(renderBase);  return trimSlash(renderBase); }
     if (sheetsBase)                { assertByEnv(sheetsBase);  return trimSlash(sheetsBase); }
 
@@ -136,15 +141,19 @@
       // для бекенда лишаємо JSON
       : { 'Content-Type': 'application/json;charset=UTF-8' };
 
-    const r = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(data || {}),
-    });
+    try {
+      const r = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(data || {}),
+      });
 
-    const text = await r.text();
-    try { return { ok: r.ok, status: r.status, data: JSON.parse(text) }; }
-    catch { return { ok: r.ok, status: r.status, data: null, text }; }
+      const text = await r.text();
+      try { return { ok: r.ok, status: r.status, data: JSON.parse(text) }; }
+      catch { return { ok: r.ok, status: r.status, data: null, text }; }
+    } catch (e) {
+      return { ok: false, status: 0, data: null, text: String(e) };
+    }
   }
 
   // ---------- Public API ----------

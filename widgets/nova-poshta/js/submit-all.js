@@ -9,7 +9,7 @@ import {
 } from './helpers.js';                                                                                       // 🧩 Валідації та утиліти
 
 import { showSuccess, showError } from './ui.js';                                                             // 🖼️ Повідомлення користувачу
-import { sendOrder } from './api.js';                                                                         // 🌐 ЄДИНИЙ запит на бекенд (customer + items)
+import { enqueueOrderForSync, ensureOrderSyncStarted } from '../../../../js/local-sync.js';
 
 // --- автозбереження форми клієнта + адреси ---
 const CUSTOMER_LS_KEY = "customerDraft_v2";
@@ -271,6 +271,7 @@ export function clearAllData({ notify = false } = {}) {
 // 🧠 Головна ініціалізація
 export function initSubmitAll() {                                                                              // →
   console.log("🧠 [submit-all.js] Ініціалізація логіки оформлення...");
+  ensureOrderSyncStarted();
 
   // 🔘 Чекбокси
   const otherToggle = document.getElementById("otherRecipientToggle");                                         // Чекбокс "Інший одержувач"
@@ -463,21 +464,13 @@ export function initSubmitAll() {                                               
     console.log("📡 Єдиний payload (customer + items):", data);
 
     try {
-      const result = await sendOrder(data); // ЄДИНИЙ шлях відправки через api.js (CONFIG)
-
-      // універсальна перевірка успіху: підтримує різні формати відповіді
-      const ok = !!(result && (result.success === true || result.status === 'ok' || result.result === 'ok'));
-      if (ok) {
-        showSuccess("✅ Замовлення надіслано!");
-        console.log("📨 Відповідь сервера:", result);
-        clearAllData();
-      } else {
-        showError("❌ Сервер повернув помилку.");
-        console.warn("⚠️ Сервер:", result);
-      }
+      const result = await enqueueOrderForSync(data);
+      showSuccess("✅ Замовлення збережено локально. Відправка виконується у фоні.");
+      console.log("📨 Замовлення додано в локальну чергу:", result);
+      clearAllData();
     } catch (err) {
       console.error("❌ Помилка під час запиту:", err);
-      showError("❌ Не вдалося зв’язатись із сервером.");
+      showError("❌ Не вдалося зберегти замовлення у локальну чергу.");
     } finally {
       window.__submitInProgress = false;
     }

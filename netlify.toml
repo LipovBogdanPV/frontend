@@ -1,7 +1,7 @@
 # === 1) Що деплоїмо ===
 [build]
-  publish   = "frontend"
-  functions = "frontend/netlify/functions"
+  publish   = "."
+  functions = "netlify/functions"
 
 # === 2) Публічні ендпоїнти API → Netlify Functions (специфічні ПЕРЕД catch-all) ===
 
@@ -9,7 +9,7 @@
 # KV → /.netlify/functions/config-kv
 [[redirects]]
   from = "/api/config/kv"
-  to   = "/.netlify/functions/config-kv"
+  to   = "/.netlify/functions/config-links"
   status = 200
   force = true
 

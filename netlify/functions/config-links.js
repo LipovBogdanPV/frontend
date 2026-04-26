@@ -3,13 +3,15 @@
 
 export const handler = async (event) => {
   try {
-    const base = (process.env.SHEETS_WEBAPP_URL || '').trim(); // ← єдина змінна
+    const q = event.queryStringParameters || {};
+    const base = String((process.env.SHEETS_WEBAPP_URL || q.gas || '')).trim();
     if (!base) {
       return json(500, { success: false, error: 'SHEETS_WEBAPP_URL is not set' });
     }
 
     // прокидуємо всі query-параметри (res, mode тощо)
-    const qs = new URLSearchParams(event.queryStringParameters || {});
+    const qs = new URLSearchParams(q);
+    qs.delete('gas');
     const target = base + (base.includes('?') ? '&' : '?') + qs.toString();
 
     // опційний дебаг: /.netlify/functions/config-links?debug=1&res=kv&mode=list

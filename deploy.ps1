@@ -20,7 +20,7 @@ Set-Location -Path $PSScriptRoot
 
   
 
- $SiteId = "716bacc3-81e7-458b-9680-cb4c74878d58"  # ← shifttime-crm-test.netlify.app
+ $SiteId = "b591b81b-1b51-4706-81ed-cd5997111195"  # ← shifttime-crm-test.netlify.app
 
 
 # --------------------------------------------------------------------------
@@ -28,7 +28,7 @@ Set-Location -Path $PSScriptRoot
 
 
 # 0b) ДРУГИЙ сайт для режиму -Both (розкоментуй і заповни, якщо треба)
-$SiteId2 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  # ← другий сайт (наприклад, тестовий)
+#$SiteId2 = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  # ← другий сайт (наприклад, тестовий)
 
 # 1) Перевірка Netlify CLI
 if (-not (Get-Command netlify -ErrorAction SilentlyContinue)) {
@@ -69,6 +69,9 @@ function Deploy-Site($Id) {
 
 # 2) Деплой
 if ($Both) {
+  if ($SiteId2 -match "^x{8}-x{4}-x{4}-x{4}-x{12}$") {
+    throw "-Both увімкнено, але SiteId2 лишився плейсхолдером. Заповніть реальний SITE_ID."
+  }
   Deploy-Site $SiteId
   Deploy-Site $SiteId2
 } else {

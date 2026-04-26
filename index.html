@@ -116,6 +116,7 @@
     import { loadAllComponents } from './js/load-components.js';
     import { initRouting } from './js/router.js';
     import { initAuth } from './widgets/admin/auth.js'; // ⬅️ ДОДАНО: ініціалізація авторизації
+    import { initLocalSync } from './js/local-sync.js';
 
     document.addEventListener('DOMContentLoaded', async () => {
       console.log('📦 Завантажуємо header/sidebar/footer...');
@@ -131,6 +132,12 @@
         });
       } catch (err) {
         console.warn('initAuth error:', err);
+      }
+
+      try {
+        await initLocalSync();
+      } catch (err) {
+        console.warn('initLocalSync error:', err);
       }
 
       console.log('🧭 Ініціалізація роутінгу...');
